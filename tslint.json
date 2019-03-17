@@ -1,0 +1,27 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended",
+        "tslint-react-recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "indent": [
+            true,
+            "spaces",
+            4
+        ],
+        "ter-indent": [
+            "spaces",
+            4
+        ],
+        "no-implicit-dependencies": false,
+        "no-shadowed-variable": false,
+        "no-submodule-imports": [
+            true,
+            "redux-saga/effects",
+            "redux-saga/utils"
+        ]
+    },
+    "rulesDirectory": []
+}
