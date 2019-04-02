@@ -1,5 +1,5 @@
 import { ActionMap, TypedActionCreator, AnyActionUnion } from '..';
-import { ILoginSuccess } from '../../services/authentication/authentication-service/authentication-service';
+import { ILoginSuccess, SessionId } from '../../services/authentication/authentication-service/authentication-service';
 import { AuthenticationErrorCode } from '../../constants/error_codes';
 
 export enum AuthenticationActionType {
@@ -8,19 +8,23 @@ export enum AuthenticationActionType {
     LOGIN_FAILED = 'AUTHENTICATION::LOGIN::FAILED',
     LOGIN_FINISHED = 'AUTHENTICATION::LOGIN::FINISHED',
     LOGOUT = 'AUTHENTICATION::LOGOUT',
+    SET_SESSION = 'AUTHENTICATION::SESSION::SET',
+    CLEAR_SESSION = 'AUTHENTICATION::SESSION::CLEAR',
 }
 
 interface ILoginActionPayload {
-    username: string;
-    password: string;
+    readonly username: string;
+    readonly password: string;
 }
 
-interface AuthenticationActionPayload {
+export interface AuthenticationActionPayload {
     [AuthenticationActionType.LOGIN_START_NATIVE]: ILoginActionPayload;
-    [AuthenticationActionType.LOGIN_FAILED]: { code: AuthenticationErrorCode };
+    [AuthenticationActionType.LOGIN_FAILED]: { code: AuthenticationErrorCode, message: string };
     [AuthenticationActionType.LOGIN_SUCCESS_NATIVE]: ILoginSuccess;
     [AuthenticationActionType.LOGIN_FINISHED]: void;
     [AuthenticationActionType.LOGOUT]: void;
+    [AuthenticationActionType.SET_SESSION]: { session: SessionId };
+    [AuthenticationActionType.CLEAR_SESSION]: void;
 }
 
 export type AuthenticationAction = ActionMap<AuthenticationActionType, AuthenticationActionPayload>;
@@ -48,4 +52,13 @@ export const loginFinished: AuthenticationActionCreator<AuthenticationActionType
 
 export const logout: AuthenticationActionCreator<AuthenticationActionType.LOGOUT> = () => ({
     type: AuthenticationActionType.LOGOUT,
+});
+
+export const setSession: AuthenticationActionCreator<AuthenticationActionType.SET_SESSION> = (payload) => ({
+    type: AuthenticationActionType.SET_SESSION,
+    payload,
+});
+
+export const clearSession: AuthenticationActionCreator<AuthenticationActionType.CLEAR_SESSION> = () => ({
+    type: AuthenticationActionType.CLEAR_SESSION,
 });

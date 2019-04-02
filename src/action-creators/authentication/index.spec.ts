@@ -1,5 +1,8 @@
-import { AuthenticationActionType, AuthenticationAction, nativeLoginStart, logout, nativeLoginSuccess, loginFinished } from '.';
+import { AuthenticationActionType, AuthenticationAction, nativeLoginStart, logout, nativeLoginSuccess, loginFinished, AuthenticationActionPayload, loginFailed, setSession, clearSession } from '.';
 import { TEST_USER } from '../user/index.spec';
+import { SessionId } from '../../services/authentication/authentication-service/authentication-service';
+
+// TODO: Add tests for new action creators
 
 describe('ActionCreator - Authentication', () => {
 
@@ -9,6 +12,8 @@ describe('ActionCreator - Authentication', () => {
         expect(AuthenticationActionType.LOGIN_FAILED).toEqual('AUTHENTICATION::LOGIN::FAILED');
         expect(AuthenticationActionType.LOGIN_FINISHED).toEqual('AUTHENTICATION::LOGIN::FINISHED');
         expect(AuthenticationActionType.LOGOUT).toEqual('AUTHENTICATION::LOGOUT');
+        expect(AuthenticationActionType.SET_SESSION).toEqual('AUTHENTICATION::SESSION::SET');
+        expect(AuthenticationActionType.CLEAR_SESSION).toEqual('AUTHENTICATION::SESSION::CLEAR');
     });
 
     it('Should produce the right LOGIN_START_NATIVE action', () => {
@@ -27,10 +32,32 @@ describe('ActionCreator - Authentication', () => {
 
     });
 
+    it('Should produce the right LOGOUT_FAILED action', () => {
+
+        const errPayload = {
+            code: 'TEST_CODE' as any,
+            message: 'Test message',
+        };
+
+        const expected: AuthenticationAction[AuthenticationActionType.LOGIN_FAILED] = {
+            type: AuthenticationActionType.LOGIN_FAILED,
+            payload: { ...errPayload },
+        };
+
+        const action = loginFailed({ ...errPayload });
+
+        expect(action).toEqual(expected);
+
+    });
+
     it('Should produce the right LOGIN_SUCCESS_NATIVE action', () => {
 
-        const payload = {
-            token: 'xxx-xxx-xxx-xxx',
+        const payload: AuthenticationActionPayload[AuthenticationActionType.LOGIN_SUCCESS_NATIVE] = {
+            auth: {
+                token: 'xxx-xxx-xxx-xxx',
+                expires: new Date((new Date().getTime()) + 7 * 24 * 60 * 60),
+                issued: new Date(),
+            },
             user: { ...TEST_USER },
         };
 
@@ -64,6 +91,33 @@ describe('ActionCreator - Authentication', () => {
         };
 
         const action = logout();
+
+        expect(action).toEqual(expected);
+
+    });
+
+    it('Should produce the right SET_SESSION action', () => {
+
+        const testSessionId: SessionId = 'test-session-id';
+
+        const expected: AuthenticationAction[AuthenticationActionType.SET_SESSION] = {
+            type: AuthenticationActionType.SET_SESSION,
+            payload: { session: testSessionId },
+        };
+
+        const action = setSession({ session: testSessionId });
+
+        expect(action).toEqual(expected);
+
+    });
+
+    it('Should produce the right CLEAR_SESSION action', () => {
+
+        const expected: AuthenticationAction[AuthenticationActionType.CLEAR_SESSION] = {
+            type: AuthenticationActionType.CLEAR_SESSION,
+        };
+
+        const action = clearSession();
 
         expect(action).toEqual(expected);
 
