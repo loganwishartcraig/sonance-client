@@ -1,5 +1,4 @@
 import { AuthenticationActionType, AuthenticationAction, nativeLoginStart, logout, nativeLoginSuccess, loginFinished, AuthenticationActionPayload, loginFailed, setSession, clearSession } from '.';
-import { TEST_USER } from '../user/index.spec';
 import { SessionId } from '../../services/authentication/authentication-service/authentication-service';
 
 // TODO: Add tests for new action creators
@@ -7,6 +6,7 @@ import { SessionId } from '../../services/authentication/authentication-service/
 describe('ActionCreator - Authentication', () => {
 
     it('Should export the right constants', () => {
+        expect(Object.values(AuthenticationActionType).length).toBe(7);
         expect(AuthenticationActionType.LOGIN_START_NATIVE).toEqual('AUTHENTICATION::LOGIN::START::NATIVE');
         expect(AuthenticationActionType.LOGIN_SUCCESS_NATIVE).toEqual('AUTHENTICATION::LOGIN::SUCCESS::NATIVE');
         expect(AuthenticationActionType.LOGIN_FAILED).toEqual('AUTHENTICATION::LOGIN::FAILED');
@@ -18,15 +18,15 @@ describe('ActionCreator - Authentication', () => {
 
     it('Should produce the right LOGIN_START_NATIVE action', () => {
 
-        const username = 'test_username';
+        const email = 'test@test.com';
         const password = 'test_password';
 
         const expected: AuthenticationAction[AuthenticationActionType.LOGIN_START_NATIVE] = {
             type: AuthenticationActionType.LOGIN_START_NATIVE,
-            payload: { username, password, },
+            payload: { email, password, },
         };
 
-        const action = nativeLoginStart({ username, password });
+        const action = nativeLoginStart({ email, password });
 
         expect(action).toEqual(expected);
 
@@ -58,7 +58,6 @@ describe('ActionCreator - Authentication', () => {
                 expires: new Date((new Date().getTime()) + 7 * 24 * 60 * 60),
                 issued: new Date(),
             },
-            user: { ...TEST_USER },
         };
 
         const expected: AuthenticationAction[AuthenticationActionType.LOGIN_SUCCESS_NATIVE] = {

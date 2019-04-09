@@ -75,7 +75,41 @@ describe('Reducers - Authentication', () => {
         const action: AuthenticationAction[AuthenticationActionType.LOGIN_START_NATIVE] = {
             type: AuthenticationActionType.LOGIN_START_NATIVE,
             payload: {
-                username: 'test-username',
+                email: 'test-username',
+                password: 'test-password',
+            },
+        };
+
+        const state = authenticationReducer(base, action);
+
+        expect(state).toEqual(expected);
+        expect(state).not.toBe(base);
+
+    });
+
+    it('Should clear any set auth error on LOGIN_START', () => {
+
+        const base: IAuthenticationState = {
+            ...generateStateClone(testInitialState),
+            error: {
+                code: 'TEST_CODE' as any,
+                message: 'Test message',
+            },
+        };
+
+        const expected: IAuthenticationState = {
+            ...generateStateClone(testInitialState),
+            loading: true,
+            error: {
+                code: undefined,
+                message: undefined,
+            },
+        };
+
+        const action: AuthenticationAction[AuthenticationActionType.LOGIN_START_NATIVE] = {
+            type: AuthenticationActionType.LOGIN_START_NATIVE,
+            payload: {
+                email: 'test-username',
                 password: 'test-password',
             },
         };
@@ -174,6 +208,49 @@ describe('Reducers - Authentication', () => {
         const expected: IAuthenticationState = {
             ...generateStateClone(testPopulatedState),
             auth: { ...generateStateClone(testInitialState).auth },
+        };
+
+        const state = authenticationReducer(base, action);
+
+        expect(state).toEqual(expected);
+        expect(state).not.toBe(base);
+
+    });
+
+    it('Produces the correct SET_SESSION state', () => {
+
+        const base = generateStateClone(testInitialState);
+
+        const session = 'xxx-xxx-xxx-test-session-id';
+
+        const action: AuthenticationAction[AuthenticationActionType.SET_SESSION] = {
+            type: AuthenticationActionType.SET_SESSION,
+            payload: { session },
+        };
+
+        const expected: IAuthenticationState = {
+            ...generateStateClone(testInitialState),
+            session,
+        };
+
+        const state = authenticationReducer(base, action);
+
+        expect(state).toEqual(expected);
+        expect(state).not.toBe(base);
+
+    });
+
+    it('Produces the correct CLEAR_SESSION state', () => {
+
+        const base = generateStateClone(testPopulatedState);
+
+        const action: AuthenticationAction[AuthenticationActionType.CLEAR_SESSION] = {
+            type: AuthenticationActionType.CLEAR_SESSION,
+        };
+
+        const expected: IAuthenticationState = {
+            ...generateStateClone(testPopulatedState),
+            session: undefined,
         };
 
         const state = authenticationReducer(base, action);

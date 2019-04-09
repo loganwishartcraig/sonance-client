@@ -1,8 +1,9 @@
 import Authenticator, { IAuthenticationService, ILoginSuccess, ILogoutSuccess } from '../authentication-service/authentication-service';
-import { TEST_USER } from '../../../action-creators/user/index.spec';
+import { AuthenticationErrorCode } from '../../../constants/error_codes';
+import { GenericError } from '../../../generics/GenericError';
 
 export interface INativeLoginRequest {
-    username: string;
+    email: string;
     password: string;
 }
 
@@ -12,7 +13,13 @@ export default class NativeAuthentication extends Authenticator {
         super(config);
     }
 
-    public async login(payload: INativeLoginRequest): Promise<ILoginSuccess> {
+    public async login({ email, password }: INativeLoginRequest): Promise<ILoginSuccess> {
+
+        if (!email) {
+            throw new GenericError({ code: AuthenticationErrorCode.INVALID_EMAIL, message: 'The email provided is invalid!' });
+        } else if (!password) {
+            throw new GenericError({ code: AuthenticationErrorCode.INVALID_PASSWORD, message: 'The password provided is invalid!' });
+        }
 
         await new Promise(r => {
 
@@ -26,7 +33,12 @@ export default class NativeAuthentication extends Authenticator {
                 expires: new Date((new Date().getTime()) + 24 * 7 * 60 * 60),
                 issued: new Date(),
             },
-            user: { ...TEST_USER },
+            user: {
+                email: 'test@test.com',
+                firstName: 'test',
+                lastName: 'user',
+                username: 'test_user',
+            },
         };
     }
 

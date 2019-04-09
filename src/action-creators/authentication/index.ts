@@ -13,14 +13,14 @@ export enum AuthenticationActionType {
 }
 
 interface ILoginActionPayload {
-    readonly username: string;
+    readonly email: string;
     readonly password: string;
 }
 
 export interface AuthenticationActionPayload {
     [AuthenticationActionType.LOGIN_START_NATIVE]: ILoginActionPayload;
     [AuthenticationActionType.LOGIN_FAILED]: { code: AuthenticationErrorCode, message: string };
-    [AuthenticationActionType.LOGIN_SUCCESS_NATIVE]: ILoginSuccess;
+    [AuthenticationActionType.LOGIN_SUCCESS_NATIVE]: { auth: ILoginSuccess['auth'] };
     [AuthenticationActionType.LOGIN_FINISHED]: void;
     [AuthenticationActionType.LOGOUT]: void;
     [AuthenticationActionType.SET_SESSION]: { session: SessionId };
