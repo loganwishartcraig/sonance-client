@@ -22,7 +22,7 @@ export default class Logger {
 
     private _logLevel: LogLevel = LogLevel.NONE;
 
-    constructor(config: ILogger) {
+    constructor(config: ILogger = {}) {
         if (typeof config.logLevel !== 'undefined') {
             this._logLevel = config.logLevel;
         }
