@@ -1,9 +1,9 @@
+import produce from 'immer';
 import { Reducer } from 'react';
 import { AnyAppAction } from '../../action-creators';
-import { AuthenticationActionType, AuthenticationAction } from '../../action-creators/authentication';
-import Authenticator, { SessionId, TokenId } from '../../services/authentication/authentication-service/authentication-service';
-import produce from 'immer';
+import { AuthenticationAction, AuthenticationActionType } from '../../action-creators/authentication';
 import { AuthenticationErrorCode } from '../../constants/error_codes';
+import { SessionId, TokenId } from '../../services/authentication/authentication-service/authentication-service';
 
 export interface IAuthenticationState {
     readonly session: SessionId | void;
@@ -47,13 +47,12 @@ const clearAuth = (
         draft => { draft.auth = { ...defaultState.auth }; }
     );
 
-const setLoadingFlag = (
-    state: IAuthenticationState,
-    loading: boolean
+const clearLoadingFlag = (
+    state: IAuthenticationState
 ): IAuthenticationState =>
     produce<IAuthenticationState>(
         state,
-        draft => { draft.loading = loading; }
+        draft => { draft.loading = false; }
     );
 
 const setAuth = (
@@ -71,22 +70,54 @@ const setAuthError = (
 ): IAuthenticationState =>
     produce<IAuthenticationState>(
         state,
-        draft => { draft.error = { code, message }; }        // TODO: Set a clearer message based on `code` or server response
+        draft => { draft.error = { code, message }; }
+    );
+
+const setSession = (
+    state: IAuthenticationState,
+    { payload: { session } }: AuthenticationAction[AuthenticationActionType.SET_SESSION]
+): IAuthenticationState =>
+    produce<IAuthenticationState>(
+        state,
+        draft => { draft.session = session; }
+    );
+
+const clearSession = (
+    state: IAuthenticationState
+): IAuthenticationState =>
+    produce<IAuthenticationState>(
+        state,
+        draft => { draft.session = undefined; }
+    );
+
+const setLoadingFlagAndClearError = (
+    state: IAuthenticationState
+): IAuthenticationState =>
+    produce<IAuthenticationState>(
+        state,
+        draft => {
+            draft.loading = true;
+            draft.error = { code: undefined, message: undefined };
+        }
     );
 
 const authenticationReducer: Reducer<IAuthenticationState, AnyAppAction> = (state: IAuthenticationState = getInitialState(), action): IAuthenticationState => {
 
     switch (action.type) {
         case AuthenticationActionType.LOGIN_START_NATIVE:
-            return setLoadingFlag(state, true);
+            return setLoadingFlagAndClearError(state);
         case AuthenticationActionType.LOGIN_FAILED:
             return setAuthError(state, action);
         case AuthenticationActionType.LOGIN_SUCCESS_NATIVE:
             return setAuth(state, action);
         case AuthenticationActionType.LOGIN_FINISHED:
-            return setLoadingFlag(state, false);
+            return clearLoadingFlag(state);
         case AuthenticationActionType.LOGOUT:
             return clearAuth(state);
+        case AuthenticationActionType.SET_SESSION:
+            return setSession(state, action);
+        case AuthenticationActionType.CLEAR_SESSION:
+            return clearSession(state);
         default:
             return state;
     }
