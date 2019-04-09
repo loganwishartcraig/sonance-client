@@ -22,6 +22,8 @@ export interface ILogoutSuccess {
 export type SessionId = string;
 export type TokenId = string;
 
+export const generateSessionId = (): SessionId => Utilities.generateRandomId();
+
 abstract class Authenticator {
 
     protected _logger: Logger;
@@ -29,8 +31,6 @@ abstract class Authenticator {
     constructor(config: IAuthenticationService) {
         this._logger = config.logger;
     }
-
-    public static issueSessionId = (): SessionId => Utilities.generateRandomId();
 
     public abstract login(payload: any): Promise<ILoginSuccess>;
     public abstract logout(): Promise<ILogoutSuccess>;
