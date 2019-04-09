@@ -1,7 +1,10 @@
 import * as React from 'react';
+import { ILabelProps, Label } from '../Label';
 
 export interface IInputProps {
     readonly id: string;
+    readonly name: string;
+    readonly label: ILabelProps;
     readonly initialValue?: any;
     readonly type: 'text' | 'radio' | 'checkbox' | 'password' | 'number' | 'email';
     readonly required?: boolean;
@@ -40,18 +43,24 @@ class Input extends React.Component<IInputProps, IInputState> {
 
         const {
             id,
+            name,
             type,
+            label,
             required = false,
         } = this.props;
 
         return (
-            <input
-                id={id}
-                type={type}
-                required={required}
-                value={value}
-                onChange={this._handleChange}
-            ></input>
+            <div>
+                <Label {...label} forId={id}></Label>
+                <input
+                    id={id}
+                    name={name}
+                    type={type}
+                    required={required}
+                    value={value}
+                    onChange={this._handleChange}
+                ></input>
+            </div>
         );
     }
 

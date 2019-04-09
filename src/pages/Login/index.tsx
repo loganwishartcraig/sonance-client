@@ -1,5 +1,5 @@
 import * as React from 'react';
-import LoginForm from '../../components/Authentication/LoginForm/LoginForm';
+import LoginForm from '../../components/Authentication/LoginForm';
 
 const LoginPage: React.FunctionComponent = () => (
 
