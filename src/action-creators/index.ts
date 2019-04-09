@@ -1,5 +1,6 @@
 import { AnyAuthenticationAction } from './authentication';
 import { AnyUserAction } from './user';
+import { AnyLifecycleAction } from './lifecycle';
 
 export type ActionType = string;
 
@@ -17,4 +18,5 @@ export type AnyActionUnion<A extends ActionMap<any, any>> = A[keyof A];
 
 export type AnyAppAction =
     AnyAuthenticationAction
-    | AnyUserAction;
+    | AnyUserAction
+    | AnyLifecycleAction;
