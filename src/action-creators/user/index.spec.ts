@@ -1,7 +1,7 @@
 import { IUser } from '../../configuration/interfaces';
 import { UserActionType, UserAction, setUser, clearUser } from '.';
 
-export const TEST_USER: IUser = {
+const TEST_USER: IUser = {
     email: 'test@test.com',
     firstName: 'f_name',
     lastName: 'l_name',
@@ -11,6 +11,7 @@ export const TEST_USER: IUser = {
 describe('ActionCreators - User', () => {
 
     it('Should produce the right action types', () => {
+        expect(Object.values(UserActionType).length).toBe(2);
         expect(UserActionType.SET_USER).toBe('USER::SET');
         expect(UserActionType.CLEAR_USER).toBe('USER::CLEAR');
     });
