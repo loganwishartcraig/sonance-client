@@ -3,8 +3,12 @@ import authenticationReducer, { IAuthenticationState } from './authentication';
 import { userReducer } from './user';
 
 const rootReducer = combineReducers({
+
     user: userReducer,
-    authentication: authenticationReducer as Reducer<IAuthenticationState, AnyAction>,      // Dirty cast because reducer typing has a bug in it
+
+    // Dirty cast because reducer typing has a bug in it
+    authentication: authenticationReducer as Reducer<IAuthenticationState, AnyAction>,
+
 });
 
 export default rootReducer;

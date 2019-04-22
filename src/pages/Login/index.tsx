@@ -3,11 +3,11 @@ import LoginForm from '../../components/Authentication/LoginForm';
 
 const LoginPage: React.FunctionComponent = () => (
 
-    <div className="LoginPage">
-        <h1>Login!</h1>
+    <main className="LoginPage">
+        <h1>Login</h1>
 
         <LoginForm />
-    </div>
+    </main>
 );
 
 export default LoginPage;

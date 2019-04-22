@@ -19,4 +19,8 @@ export const Utilities = {
         }
     },
 
+    containsCookie(stringToTest: string, cookieName: string): boolean {
+        return new RegExp(`^(.*;)?\s*${cookieName}\s*=\s*[^;]`).test(stringToTest);
+    },
+
 };
