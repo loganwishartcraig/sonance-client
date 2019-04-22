@@ -1,10 +1,10 @@
 import * as React from 'react';
-import LoginPage from '../../pages/Login';
+import { Link } from 'react-router-dom';
 
 const App: React.FunctionComponent = () => (
-    <div className="App">
-        Hello
-        <LoginPage />
+    <div>
+        <Link to="/login">Login</Link><br />
+        <span>Welcome to the app!</span>
     </div>
 );
 

@@ -8,6 +8,7 @@ export interface IInputProps {
     readonly initialValue?: any;
     readonly type: 'text' | 'radio' | 'checkbox' | 'password' | 'number' | 'email';
     readonly required?: boolean;
+    readonly disabled?: boolean;
     readonly onChange?: (x: any) => void;
 }
 
@@ -22,7 +23,7 @@ class Input extends React.Component<IInputProps, IInputState> {
         super(props);
 
         this.state = {
-            value: this.props.initialValue,
+            value: this.props.initialValue || '',
         };
 
     }
@@ -46,6 +47,7 @@ class Input extends React.Component<IInputProps, IInputState> {
             name,
             type,
             label,
+            disabled,
             required = false,
         } = this.props;
 
@@ -59,6 +61,7 @@ class Input extends React.Component<IInputProps, IInputState> {
                     required={required}
                     value={value}
                     onChange={this._handleChange}
+                    disabled={disabled}
                 ></input>
             </div>
         );

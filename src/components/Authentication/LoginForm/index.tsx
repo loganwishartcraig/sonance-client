@@ -54,7 +54,7 @@ interface ILoginFormOwnProps { }
 type ILoginFormProps = IConnectedComponentProps<ILoginFormStateProps, ILoginFormDispatchProps, ILoginFormOwnProps>;
 class LoginForm extends React.Component<ILoginFormProps> {
 
-    private _handleSubmit = (formData: ILoginFormData) => {
+    private _handleSubmit = (formData: any) => {
         this.props.startLogin(formData);
     }
 
@@ -70,7 +70,7 @@ class LoginForm extends React.Component<ILoginFormProps> {
             <div>
                 <Form id="LoginForm" groups={loginFormGroups} onSubmit={this._handleSubmit} />
                 {loading && <span>Loading...</span>}
-                {errMessage && <span>Error: {errMessage}</span>}
+                {errMessage && <span style={{ color: 'red' }}>{errMessage}</span>}
             </div>
 
         );
