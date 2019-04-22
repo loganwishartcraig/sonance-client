@@ -2,11 +2,11 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
-import App from './components/App';
+import RouteManager from './components/RouteManager';
 
 ReactDOM.render(
     <Provider store={store}>
-        <App />
+        <RouteManager />
     </Provider>,
     document.getElementById('app-root')
 );
