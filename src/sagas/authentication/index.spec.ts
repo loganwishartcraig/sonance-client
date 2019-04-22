@@ -1,11 +1,15 @@
+import { call, put, take } from 'redux-saga/effects';
 import { nativeLoginSaga } from '.';
+import {
+    AuthenticationAction,
+    AuthenticationActionPayload,
+    AuthenticationActionType
+} from '../../action-creators/authentication';
+import { UserAction, UserActionType } from '../../action-creators/user';
+import { GenericError } from '../../common/GenericError';
+import { ILoginSuccess } from '../../services/authentication/authentication-service/authentication-service';
 import NativeAuthentication from '../../services/authentication/native-authentication/native-authentication';
 import Logger, { LogLevel } from '../../services/Logger';
-import { take, call, put } from 'redux-saga/effects';
-import { AuthenticationAction, AuthenticationActionType, AuthenticationActionPayload } from '../../action-creators/authentication';
-import { ILoginSuccess } from '../../services/authentication/authentication-service/authentication-service';
-import { UserAction, UserActionType, setUser } from '../../action-creators/user';
-import { GenericError } from '../../generics/GenericError';
 
 jest.mock('../../services/authentication/native-authentication/native-authentication');
 
@@ -34,14 +38,9 @@ describe('Sagas - Authentication', () => {
 
         curs = gen.next(action);
 
-        expect(curs.value).toEqual(call(service.login, testPayload));
+        expect(curs.value).toEqual(call([service, service.login], testPayload));
 
         const loginResult: ILoginSuccess = {
-            auth: {
-                expires: new Date(),
-                issued: new Date(),
-                token: 'xxx-xxx-xxx-test-token',
-            },
             user: {
                 email: 'test@test.com',
                 firstName: 'test',
@@ -65,9 +64,6 @@ describe('Sagas - Authentication', () => {
 
         const loginSuccessAction: AuthenticationAction[AuthenticationActionType.LOGIN_SUCCESS_NATIVE] = {
             type: AuthenticationActionType.LOGIN_SUCCESS_NATIVE,
-            payload: {
-                auth: { ...loginResult.auth },
-            },
         };
 
         expect(curs.value).toEqual(put(loginSuccessAction));
@@ -107,14 +103,9 @@ describe('Sagas - Authentication', () => {
 
         curs = gen.next(action);
 
-        expect(curs.value).toEqual(call(service.login, testPayload));
+        expect(curs.value).toEqual(call([service, service.login], testPayload));
 
         const loginResult: ILoginSuccess = {
-            auth: {
-                expires: new Date(),
-                issued: new Date(),
-                token: 'xxx-xxx-xxx-test-token',
-            },
             user: {
                 email: 'test@test.com',
                 firstName: 'test',

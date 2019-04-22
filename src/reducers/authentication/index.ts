@@ -3,7 +3,7 @@ import { Reducer } from 'react';
 import { AnyAppAction } from '../../action-creators';
 import { AuthenticationAction, AuthenticationActionType } from '../../action-creators/authentication';
 import { AuthenticationErrorCode } from '../../constants/error_codes';
-import { SessionId, TokenId } from '../../services/authentication/authentication-service/authentication-service';
+import { SessionId } from '../../services/authentication/authentication-service/authentication-service';
 
 export interface IAuthenticationState {
     readonly session: SessionId | void;
@@ -13,9 +13,7 @@ export interface IAuthenticationState {
         readonly message: string | void;
     };
     readonly auth: {
-        readonly token: TokenId | void;
-        readonly issued: Date | void;
-        readonly expires: Date | void;
+        readonly authorized: boolean;
     };
 }
 
@@ -27,9 +25,7 @@ const defaultState: IAuthenticationState = {
         message: undefined,
     },
     auth: {
-        expires: undefined,
-        issued: undefined,
-        token: undefined,
+        authorized: false,
     },
 };
 
@@ -56,12 +52,11 @@ const clearLoadingFlag = (
     );
 
 const setAuth = (
-    state: IAuthenticationState,
-    { payload: { auth } }: AuthenticationAction[AuthenticationActionType.LOGIN_SUCCESS_NATIVE]
+    state: IAuthenticationState
 ): IAuthenticationState =>
     produce<IAuthenticationState>(
         state,
-        draft => { draft.auth = { ...auth }; }
+        draft => { draft.auth.authorized = true; }
     );
 
 const setAuthError = (
@@ -109,7 +104,7 @@ const authenticationReducer: Reducer<IAuthenticationState, AnyAppAction> = (stat
         case AuthenticationActionType.LOGIN_FAILED:
             return setAuthError(state, action);
         case AuthenticationActionType.LOGIN_SUCCESS_NATIVE:
-            return setAuth(state, action);
+            return setAuth(state);
         case AuthenticationActionType.LOGIN_FINISHED:
             return clearLoadingFlag(state);
         case AuthenticationActionType.LOGOUT:

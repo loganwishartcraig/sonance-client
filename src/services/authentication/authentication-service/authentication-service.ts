@@ -7,11 +7,6 @@ export interface IAuthenticationService {
 }
 
 export interface ILoginSuccess {
-    auth: {
-        token: TokenId,
-        issued: Date;
-        expires: Date;
-    };
     user: IUser;
 }
 
@@ -20,7 +15,6 @@ export interface ILogoutSuccess {
 }
 
 export type SessionId = string;
-export type TokenId = string;
 
 export const generateSessionId = (): SessionId => Utilities.generateRandomId();
 
@@ -34,6 +28,20 @@ abstract class Authenticator {
 
     public abstract login(payload: any): Promise<ILoginSuccess>;
     public abstract logout(): Promise<ILogoutSuccess>;
+
+    public async postJson<J extends Object>(url: string, payload: J): Promise<Response> {
+
+        return fetch(url, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+    }
 
 }
 

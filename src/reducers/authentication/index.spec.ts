@@ -11,9 +11,7 @@ const testInitialState: IAuthenticationState = {
         message: undefined,
     },
     auth: {
-        expires: undefined,
-        issued: undefined,
-        token: undefined,
+        authorized: false,
     },
 };
 
@@ -25,9 +23,7 @@ const testPopulatedState: IAuthenticationState = {
         message: undefined,
     },
     auth: {
-        expires: new Date((new Date()).getTime() + 24 * 7 * 7 * 7),
-        issued: new Date(),
-        token: 'xxx-xxx-xxx-xxx-token',
+        authorized: true,
     },
 };
 
@@ -152,22 +148,16 @@ describe('Reducers - Authentication', () => {
         const base: IAuthenticationState = generateStateClone(testInitialState);
 
         const successPayload: ILoginSuccess = {
-            auth: {
-                expires: new Date(),
-                issued: new Date(),
-                token: 'xxx-xxx-test-token',
-            },
             user: { ...testUser },
         };
 
         const action: AuthenticationAction[AuthenticationActionType.LOGIN_SUCCESS_NATIVE] = {
             type: AuthenticationActionType.LOGIN_SUCCESS_NATIVE,
-            payload: { ...successPayload },
         };
 
         const expected: IAuthenticationState = {
             ...generateStateClone(testInitialState),
-            auth: { ...successPayload.auth },
+            auth: { authorized: true },
         };
 
         const state = authenticationReducer(base, action);

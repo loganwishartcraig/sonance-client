@@ -1,6 +1,6 @@
-import { ActionMap, TypedActionCreator, AnyActionUnion } from '..';
-import { ILoginSuccess, SessionId } from '../../services/authentication/authentication-service/authentication-service';
+import { ActionMap, AnyActionUnion, TypedActionCreator } from '..';
 import { AuthenticationErrorCode } from '../../constants/error_codes';
+import { SessionId } from '../../services/authentication/authentication-service/authentication-service';
 
 export enum AuthenticationActionType {
     LOGIN_START_NATIVE = 'AUTHENTICATION::LOGIN::START::NATIVE',
@@ -20,7 +20,7 @@ interface ILoginActionPayload {
 export interface AuthenticationActionPayload {
     [AuthenticationActionType.LOGIN_START_NATIVE]: ILoginActionPayload;
     [AuthenticationActionType.LOGIN_FAILED]: { code: AuthenticationErrorCode, message: string };
-    [AuthenticationActionType.LOGIN_SUCCESS_NATIVE]: { auth: ILoginSuccess['auth'] };
+    [AuthenticationActionType.LOGIN_SUCCESS_NATIVE]: void;
     [AuthenticationActionType.LOGIN_FINISHED]: void;
     [AuthenticationActionType.LOGOUT]: void;
     [AuthenticationActionType.SET_SESSION]: { session: SessionId };
@@ -28,17 +28,21 @@ export interface AuthenticationActionPayload {
 }
 
 export type AuthenticationAction = ActionMap<AuthenticationActionType, AuthenticationActionPayload>;
-export type AuthenticationActionCreator<T extends AuthenticationActionType> = TypedActionCreator<T, AuthenticationActionPayload[T]>;
+
+export type AuthenticationActionCreator
+    <T extends AuthenticationActionType> = TypedActionCreator<T, AuthenticationActionPayload[T]>;
+
 export type AnyAuthenticationAction = AnyActionUnion<AuthenticationAction>;
 
-export const nativeLoginStart: AuthenticationActionCreator<AuthenticationActionType.LOGIN_START_NATIVE> = (payload) => ({
+export const nativeLoginStart: AuthenticationActionCreator<
+    AuthenticationActionType.LOGIN_START_NATIVE
+> = (payload) => ({
     type: AuthenticationActionType.LOGIN_START_NATIVE,
     payload,
 });
 
-export const nativeLoginSuccess: AuthenticationActionCreator<AuthenticationActionType.LOGIN_SUCCESS_NATIVE> = (payload) => ({
+export const nativeLoginSuccess: AuthenticationActionCreator<AuthenticationActionType.LOGIN_SUCCESS_NATIVE> = () => ({
     type: AuthenticationActionType.LOGIN_SUCCESS_NATIVE,
-    payload,
 });
 
 export const loginFailed: AuthenticationActionCreator<AuthenticationActionType.LOGIN_FAILED> = (payload) => ({

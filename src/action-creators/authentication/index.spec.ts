@@ -1,4 +1,14 @@
-import { AuthenticationActionType, AuthenticationAction, nativeLoginStart, logout, nativeLoginSuccess, loginFinished, AuthenticationActionPayload, loginFailed, setSession, clearSession } from '.';
+import {
+    AuthenticationAction,
+    AuthenticationActionType,
+    clearSession,
+    loginFailed,
+    loginFinished,
+    logout,
+    nativeLoginStart,
+    nativeLoginSuccess,
+    setSession
+} from '.';
 import { SessionId } from '../../services/authentication/authentication-service/authentication-service';
 
 // TODO: Add tests for new action creators
@@ -52,20 +62,11 @@ describe('ActionCreator - Authentication', () => {
 
     it('Should produce the right LOGIN_SUCCESS_NATIVE action', () => {
 
-        const payload: AuthenticationActionPayload[AuthenticationActionType.LOGIN_SUCCESS_NATIVE] = {
-            auth: {
-                token: 'xxx-xxx-xxx-xxx',
-                expires: new Date((new Date().getTime()) + 7 * 24 * 60 * 60),
-                issued: new Date(),
-            },
-        };
-
         const expected: AuthenticationAction[AuthenticationActionType.LOGIN_SUCCESS_NATIVE] = {
             type: AuthenticationActionType.LOGIN_SUCCESS_NATIVE,
-            payload: { ...payload },
         };
 
-        const action = nativeLoginSuccess(payload);
+        const action = nativeLoginSuccess();
 
         expect(action).toEqual(expected);
 
