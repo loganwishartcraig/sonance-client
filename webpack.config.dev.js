@@ -20,6 +20,7 @@ module.exports = {
         port: 8080,
         hot: true,
         inline: true,
+        historyApiFallback: true,
         https: (() => {
 
             try {

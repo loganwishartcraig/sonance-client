@@ -6,6 +6,28 @@
     ],
     "jsRules": {},
     "rules": {
+        "max-line-length": [
+            true,
+            120
+        ],
+        "variable-name": [
+            true,
+            "ban-keywords",
+            "check-format",
+            "allow-leading-underscore"
+        ],
+        "function-name": [
+            true,
+            {
+                "method-regex": "^[a-z][\\w\\d]+$",
+                "private-method-regex": "^[a-z_][\\w\\d]+$",
+                "protected-method-regex": "^[a-z_][\\w\\d]+$",
+                "static-method-regex": "^[A-Z_\\d]+$",
+                "function-regex": "^[a-z][\\w\\d]+$"
+            }
+        ],
+        "no-object-literal-type-assertion": false,
+        "no-conditional-assignment": false,
         "indent": [
             true,
             "spaces",
