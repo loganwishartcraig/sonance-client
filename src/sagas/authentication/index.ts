@@ -4,13 +4,17 @@ import {
     AuthenticationActionType,
     loginFailed,
     loginFinished,
-    nativeLoginSuccess
+    nativeLoginSuccess,
+    registrationSuccess,
+    registrationFailed,
+    registrationFinished
 } from '../../action-creators/authentication';
 import { LifecycleActionType } from '../../action-creators/lifecycle';
 import { setUser } from '../../action-creators/user';
 import Authenticator, {
     generateSessionId,
-    ILoginSuccess
+    ILoginSuccess,
+    IRegistrationSuccess
 } from '../../services/authentication/authentication-service/authentication-service';
 import NativeAuthentication from '../../services/authentication/native-authentication/native-authentication';
 import Logger from '../../services/Logger';
@@ -42,6 +46,30 @@ export const nativeLoginSaga = function* (authenticator: Authenticator) {
         }
     }
 
+};
+
+export const registrationSaga = function* (authenticator: Authenticator) {
+
+    let action: AuthenticationAction[AuthenticationActionType.REGISTRATION_START];
+
+    while (action = yield take(AuthenticationActionType.REGISTRATION_START)) {
+
+        const { payload } = action;
+
+        try {
+
+            const { user }: IRegistrationSuccess = yield call([authenticator, authenticator.register], payload);
+
+            yield put(setUser({ user }));
+            yield put(registrationSuccess({ user }));
+
+        } catch (e) {
+            yield put(registrationFailed({ code: e.code, message: e.message }));
+        } finally {
+            yield put(registrationFinished());
+        }
+
+    }
 };
 
 const setSession = function* (generateSessionId: () => string) {
@@ -88,5 +116,6 @@ export const rootAuthSaga = function* () {
         spawn(setSession, generateSessionId),
         spawn(initializeAuthState, authChecker),
         spawn(nativeLoginSaga, nativeAuthenticationService),
+        spawn(registrationSaga, nativeAuthenticationService),
     ]);
 };
