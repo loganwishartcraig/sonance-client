@@ -9,8 +9,8 @@ interface IRegistrationFormData {
     readonly email: string;
     readonly password: string;
     readonly passwordConfirmation: string;
-    readonly firstName: string;
-    readonly lastName: string;
+    readonly nameFirst: string;
+    readonly nameLast: string;
 }
 
 interface IRegistrationFormStateProps {
@@ -35,6 +35,9 @@ class LoginForm extends React.Component<IRegistrationFormProps> {
     }
 
     public render() {
+
+        const { error: { message: errorMessage } } = this.props;
+
         return <RegistrationFormContainer id={'LoginForm'} onSubmit={this._handleSubmit}>
             {({ onChange }) => (
                 <div>
@@ -61,13 +64,24 @@ class LoginForm extends React.Component<IRegistrationFormProps> {
                                 required
                             />
                         </label>
+                        <label className="regForm--label" htmlFor="regForm--input--passwordCheck">
+                            Retype Password
+                            <input
+                                id="regForm--input--passwordCheck"
+                                name="passwordCheck"
+                                type="password"
+                                autoComplete="new-password"
+                                onChange={onChange}
+                                required
+                            />
+                        </label>
                     </fieldset>
                     <fieldset>
                         <label className="regForm--label" htmlFor="regForm--input--fname">
                             First Name
                             <input
                                 id="regForm--input--fname"
-                                name="firstName"
+                                name="nameFirst"
                                 type="text"
                                 autoComplete="given-name"
                                 onChange={onChange}
@@ -78,7 +92,7 @@ class LoginForm extends React.Component<IRegistrationFormProps> {
                             Last Name
                             <input
                                 id="regForm--input--lname"
-                                name="lastName"
+                                name="nameLast"
                                 type="text"
                                 autoComplete="family-name"
                                 onChange={onChange}
@@ -89,6 +103,7 @@ class LoginForm extends React.Component<IRegistrationFormProps> {
                     <button type="submit">
                         Register
                     </button>
+                    {errorMessage && <span style={{ color: 'red', display: 'block' }}>{errorMessage}</span>}
                 </div>
             )}
         </RegistrationFormContainer>;

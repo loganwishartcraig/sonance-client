@@ -34,6 +34,9 @@ class LoginForm extends React.Component<ILoginFormProps> {
     }
 
     public render() {
+
+        const { error: { message: errorMessage } } = this.props;
+
         return <LoginFormContainer id={'LoginForm'} onSubmit={this._handleSubmit}>
             {({ onChange }) => (
                 <div>
@@ -64,6 +67,7 @@ class LoginForm extends React.Component<ILoginFormProps> {
                     <button type="submit">
                         Login
                     </button>
+                    {errorMessage && <span style={{ color: 'red', display: 'block' }}>{errorMessage}</span>}
                 </div>
             )}
         </LoginFormContainer>;
