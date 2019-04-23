@@ -5,7 +5,10 @@ import {
     IRegistrationSuccess,
     SessionId
 } from '../../services/authentication/authentication-service/authentication-service';
-import { INativeLoginRequest, INativeRegistrationRequest } from '../../services/authentication/native-authentication/native-authentication';
+import {
+    INativeLoginRequest,
+    INativeRegistrationRequest
+} from '../../services/authentication/native-authentication/native-authentication';
 
 export enum AuthenticationActionType {
 

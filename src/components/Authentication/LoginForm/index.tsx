@@ -94,4 +94,4 @@ const dispatchToProps: MapDispatchToProps<
     startLogin: nativeLoginStart,
 };
 
-export default connect(stateToProps, dispatchToProps)(LoginForm);;
+export default connect(stateToProps, dispatchToProps)(LoginForm);
