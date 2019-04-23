@@ -7,7 +7,7 @@ export interface IUser {
     readonly phoneNumber?: string;
 }
 
-export interface INetworkRequestFailure {
-    readonly code: string;
+export interface INetworkRequestFailure<CodeType = string> {
+    readonly code: CodeType;
     readonly message: string;
 }

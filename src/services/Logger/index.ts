@@ -86,3 +86,5 @@ export default class Logger {
     }
 
 }
+
+export const appLogger: Logger = new Logger();

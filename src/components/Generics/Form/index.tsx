@@ -1,57 +1,83 @@
 import * as React from 'react';
-import FormGroup, { IFormGroupProps } from './FormGroup';
+import { appLogger } from '../../../services/Logger';
 
-export interface IFormProps {
-    readonly id: string;
-    readonly groups: IFormGroupProps[];
-    readonly onSubmit: (formData: { [name: string]: any }) => void;
+export interface IFormProps<FormDataShape extends Object> {
+    readonly id?: string;
+    readonly className?: string;
+    readonly initialValues?: Partial<FormData>;
+    readonly onSubmit: (formData: FormDataShape) => void;
+    readonly children: (config: { onChange: (...args: any[]) => void }) => React.ReactNode;
 }
 
-class Form<P extends Object> extends React.Component<IFormProps> {
+interface IFormState<FormDataShape extends Object> {
+    readonly values: FormDataShape;
+}
 
-    private _getSerializedFormData(_evt: React.FormEvent<HTMLFormElement>): P {
+class Form<FormDataShape extends Object> extends React.Component<IFormProps<FormDataShape>, IFormState<FormDataShape>> {
 
-        const serialized: any = {};
-        const data = new FormData(_evt.target as HTMLFormElement);
 
-        data.forEach((value, key) => serialized[key] = value);
+    public state: IFormState<FormDataShape>;
 
-        return serialized;
+    constructor(props: IFormProps<FormDataShape>) {
+        super(props);
+        this.state = this._parseInitialStateFromProps(props);
     }
 
-    private _handleSubmit: (_evt: React.FormEvent<HTMLFormElement>) => void = (_evt) => {
+    private _handleInputChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
 
-        _evt.preventDefault();
+        const name = target.getAttribute('name');
 
-        const formData = this._getSerializedFormData(_evt);
-
-        const { onSubmit } = this.props;
-
-        if (typeof onSubmit === 'function') {
-            onSubmit(formData);
+        if (typeof name === 'string' && name) {
+            this._updateFormValueInState(name, target.value);
+        } else {
+            appLogger.error({
+                message: '[Form] - _handleInputChange() - Non/empty string `name` attribute value on target.',
+            });
         }
 
     }
 
-    public render() {
+    private _handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 
-        const { id, groups = [] } = this.props;
+        event.preventDefault();
 
-        return (
-            <form id={id} onSubmit={this._handleSubmit}>
+        const { onSubmit } = this.props;
 
-                form!! {id}
+        if (typeof onSubmit === 'function') {
+            onSubmit(this.state.values);
+        }
 
-                {groups.map(group => (
-                    <FormGroup {...group} key={group.id}></FormGroup>
-                ))}
-
-                <button type="submit">submit</button>
-
-            </form>
-        );
     }
 
+    private _updateFormValueInState(name: string, value: any) {
+        this.setState({
+            ...this.state,
+            values: {
+                ...this.state.values,
+                [name]: value,
+            },
+        });
+    }
+
+    private _parseInitialStateFromProps({
+        initialValues = {},
+    }: IFormProps<FormDataShape>): IFormState<FormDataShape> {
+        return {
+            values: JSON.parse(JSON.stringify(initialValues)),
+        };
+    }
+
+    public render() {
+
+        const { id, className, children } = this.props;
+
+        return (
+            <form id={id} className={className} onSubmit={this._handleSubmit}>
+                {children({ onChange: this._handleInputChange })}
+            </form>
+        );
+
+    }
 }
 
 export default Form;

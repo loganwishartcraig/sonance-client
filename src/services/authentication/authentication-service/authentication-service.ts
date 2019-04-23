@@ -10,6 +10,10 @@ export interface ILoginSuccess {
     user: IUser;
 }
 
+export interface IRegistrationSuccess {
+    user: IUser;
+}
+
 export interface ILogoutSuccess {
     message: string;
 }
@@ -27,6 +31,7 @@ abstract class Authenticator {
     }
 
     public abstract login(payload: any): Promise<ILoginSuccess>;
+    public abstract register(payload: any): Promise<IRegistrationSuccess>;
     public abstract logout(): Promise<ILogoutSuccess>;
 
     public async postJson<J extends Object>(url: string, payload: J): Promise<Response> {

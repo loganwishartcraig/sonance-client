@@ -1,42 +1,35 @@
+import { GenericError } from '../../../common/GenericError';
+import { INetworkRequestFailure } from '../../../configuration/interfaces';
+import { SONANCE_API_ENDPOINT } from '../../../constants/api_endpoints';
+import { GenericErrorCode, NetworkServiceErrorCode } from '../../../constants/error_codes';
 import Authenticator, {
     IAuthenticationService,
     ILoginSuccess,
-    ILogoutSuccess
+    ILogoutSuccess,
+    IRegistrationSuccess
 } from '../authentication-service/authentication-service';
-import { AuthenticationErrorCode, GenericErrorCode, NetworkServiceErrorCode } from '../../../constants/error_codes';
-import { GenericError, IGenericError } from '../../../common/GenericError';
-import { SONANCE_API_ENDPOINT } from '../../../constants/api_endpoints';
-import { INetworkRequestFailure } from '../../../configuration/interfaces';
 
 export interface INativeLoginRequest {
-    email: string;
-    password: string;
+    readonly email: string;
+    readonly password: string;
+}
+
+export interface INativeRegistrationRequest {
+    readonly email: string;
+    readonly password: string;
+    readonly firstName: string;
+    readonly lastName: string;
 }
 
 export default class NativeAuthentication extends Authenticator {
 
     private static readonly _resourcePaths = {
         login: '/auth/login',
+        registration: '/auth/register'
     };
 
     constructor(config: IAuthenticationService) {
         super(config);
-    }
-
-    private _validateLoginPayload({ email, password }: INativeLoginRequest) {
-
-        if (!email) {
-            throw new GenericError({
-                code: AuthenticationErrorCode.INVALID_EMAIL,
-                message: 'Enter your email in the format user@domain.com',
-            });
-        } else if (!password) {
-            throw new GenericError({
-                code: AuthenticationErrorCode.INVALID_PASSWORD,
-                message: 'Enter your password.',
-            });
-        }
-
     }
 
     private async _resolveErrorFromResponse(response: Response): Promise<GenericError> {
@@ -71,8 +64,6 @@ export default class NativeAuthentication extends Authenticator {
 
     public async login(payload: INativeLoginRequest): Promise<ILoginSuccess> {
 
-        this._validateLoginPayload(payload);
-
         const url = `${SONANCE_API_ENDPOINT}${NativeAuthentication._resourcePaths.login}`;
         const response = await this.postJson(url, payload);
 
@@ -80,6 +71,19 @@ export default class NativeAuthentication extends Authenticator {
             throw await this._resolveErrorFromResponse(response);
         } else {
             return this._resolveSuccessJson<ILoginSuccess>(response);
+        }
+
+    }
+
+    public async register(payload: INativeRegistrationRequest): Promise<IRegistrationSuccess> {
+
+        const url = `${SONANCE_API_ENDPOINT}${NativeAuthentication._resourcePaths.registration}`;
+        const response = await this.postJson(url, payload);
+
+        if (!response.ok) {
+            throw await this._resolveErrorFromResponse(response);
+        } else {
+            return this._resolveSuccessJson<IRegistrationSuccess>(response);
         }
 
     }

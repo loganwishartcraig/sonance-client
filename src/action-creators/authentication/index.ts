@@ -1,30 +1,55 @@
 import { ActionMap, AnyActionUnion, TypedActionCreator } from '..';
 import { AuthenticationErrorCode } from '../../constants/error_codes';
-import { SessionId } from '../../services/authentication/authentication-service/authentication-service';
+import { SessionId, IRegistrationSuccess } from '../../services/authentication/authentication-service/authentication-service';
+import { string } from 'prop-types';
+import { INetworkRequestFailure } from '../../configuration/interfaces';
 
 export enum AuthenticationActionType {
+
     LOGIN_START_NATIVE = 'AUTHENTICATION::LOGIN::START::NATIVE',
     LOGIN_SUCCESS_NATIVE = 'AUTHENTICATION::LOGIN::SUCCESS::NATIVE',
     LOGIN_FAILED = 'AUTHENTICATION::LOGIN::FAILED',
     LOGIN_FINISHED = 'AUTHENTICATION::LOGIN::FINISHED',
+
+    REGISTRATION_START = 'AUTHENTICATION::REGISTRATION::START',
+    REGISTRATION_SUCCESS = 'AUTHENTICATION::REGISTRATION::SUCCESS',
+    REGISTRATION_FAILED = 'AUTHENTICATION::REGISTRATION::FAILED',
+    REGISTRATION_FINISHED = 'AUTHENTICATION::REGISTRATION::FINISHED',
+
     LOGOUT = 'AUTHENTICATION::LOGOUT',
     SET_SESSION = 'AUTHENTICATION::SESSION::SET',
     CLEAR_SESSION = 'AUTHENTICATION::SESSION::CLEAR',
+
 }
 
-interface ILoginActionPayload {
+interface ILoginStartActionPayload {
     readonly email: string;
     readonly password: string;
 }
 
+interface IRegistrationStartActionPayload {
+    readonly email: string;
+    readonly password: string;
+    readonly firstName: string;
+    readonly lastName: string;
+}
+
 export interface AuthenticationActionPayload {
-    [AuthenticationActionType.LOGIN_START_NATIVE]: ILoginActionPayload;
-    [AuthenticationActionType.LOGIN_FAILED]: { code: AuthenticationErrorCode, message: string };
+
+    [AuthenticationActionType.LOGIN_START_NATIVE]: ILoginStartActionPayload;
+    [AuthenticationActionType.LOGIN_FAILED]: INetworkRequestFailure<AuthenticationErrorCode>;
     [AuthenticationActionType.LOGIN_SUCCESS_NATIVE]: void;
     [AuthenticationActionType.LOGIN_FINISHED]: void;
+
+    [AuthenticationActionType.REGISTRATION_START]: IRegistrationStartActionPayload;
+    [AuthenticationActionType.REGISTRATION_SUCCESS]: IRegistrationSuccess;
+    [AuthenticationActionType.REGISTRATION_FAILED]: INetworkRequestFailure;
+    [AuthenticationActionType.REGISTRATION_FINISHED]: void;
+
     [AuthenticationActionType.LOGOUT]: void;
     [AuthenticationActionType.SET_SESSION]: { session: SessionId };
     [AuthenticationActionType.CLEAR_SESSION]: void;
+
 }
 
 export type AuthenticationAction = ActionMap<AuthenticationActionType, AuthenticationActionPayload>;
@@ -52,6 +77,33 @@ export const loginFailed: AuthenticationActionCreator<AuthenticationActionType.L
 
 export const loginFinished: AuthenticationActionCreator<AuthenticationActionType.LOGIN_FINISHED> = () => ({
     type: AuthenticationActionType.LOGIN_FINISHED,
+});
+
+export const registrationStart: AuthenticationActionCreator<
+    AuthenticationActionType.REGISTRATION_START
+> = (payload) => ({
+    type: AuthenticationActionType.REGISTRATION_START,
+    payload,
+});
+
+export const registrationSuccess: AuthenticationActionCreator<
+    AuthenticationActionType.REGISTRATION_SUCCESS
+> = (payload) => ({
+    type: AuthenticationActionType.REGISTRATION_SUCCESS,
+    payload,
+});
+
+export const registrationFailed: AuthenticationActionCreator<
+    AuthenticationActionType.REGISTRATION_FAILED
+> = (payload) => ({
+    type: AuthenticationActionType.REGISTRATION_FAILED,
+    payload,
+});
+
+export const registrationFinished: AuthenticationActionCreator<
+    AuthenticationActionType.REGISTRATION_FINISHED
+> = () => ({
+    type: AuthenticationActionType.REGISTRATION_FINISHED,
 });
 
 export const logout: AuthenticationActionCreator<AuthenticationActionType.LOGOUT> = () => ({
