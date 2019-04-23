@@ -61,7 +61,8 @@ const setAuth = (
 
 const setAuthError = (
     state: IAuthenticationState,
-    { payload: { code, message } }: AuthenticationAction[AuthenticationActionType.LOGIN_FAILED]
+    { payload: { code, message }, }:
+        AuthenticationAction[AuthenticationActionType.LOGIN_FAILED | AuthenticationActionType.REGISTRATION_FAILED]
 ): IAuthenticationState =>
     produce<IAuthenticationState>(
         state,
@@ -96,9 +97,13 @@ const setLoadingFlagAndClearError = (
         }
     );
 
-const authenticationReducer: Reducer<IAuthenticationState, AnyAppAction> = (state: IAuthenticationState = getInitialState(), action): IAuthenticationState => {
+const authenticationReducer: Reducer<
+    IAuthenticationState,
+    AnyAppAction
+> = (state: IAuthenticationState = getInitialState(), action): IAuthenticationState => {
 
     switch (action.type) {
+
         case AuthenticationActionType.LOGIN_START_NATIVE:
             return setLoadingFlagAndClearError(state);
         case AuthenticationActionType.LOGIN_FAILED:
@@ -107,8 +112,19 @@ const authenticationReducer: Reducer<IAuthenticationState, AnyAppAction> = (stat
             return setAuth(state);
         case AuthenticationActionType.LOGIN_FINISHED:
             return clearLoadingFlag(state);
+
+        case AuthenticationActionType.REGISTRATION_START:
+            return setLoadingFlagAndClearError(state);
+        case AuthenticationActionType.REGISTRATION_SUCCESS:
+            return setAuth(state);
+        case AuthenticationActionType.REGISTRATION_FAILED:
+            return setAuthError(state, action);
+        case AuthenticationActionType.REGISTRATION_FINISHED:
+            return clearLoadingFlag(state);
+
         case AuthenticationActionType.LOGOUT:
             return clearAuth(state);
+
         case AuthenticationActionType.SET_SESSION:
             return setSession(state, action);
         case AuthenticationActionType.CLEAR_SESSION:
