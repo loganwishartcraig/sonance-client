@@ -17,15 +17,15 @@ export interface INativeLoginRequest {
 export interface INativeRegistrationRequest {
     readonly email: string;
     readonly password: string;
-    readonly firstName: string;
-    readonly lastName: string;
+    readonly nameFirst: string;
+    readonly nameLast: string;
 }
 
 export default class NativeAuthentication extends Authenticator {
 
     private static readonly _resourcePaths = {
         login: '/auth/login',
-        registration: '/auth/register'
+        registration: '/auth/register',
     };
 
     constructor(config: IAuthenticationService) {

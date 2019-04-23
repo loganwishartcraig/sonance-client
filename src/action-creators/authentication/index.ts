@@ -1,8 +1,11 @@
 import { ActionMap, AnyActionUnion, TypedActionCreator } from '..';
-import { AuthenticationErrorCode } from '../../constants/error_codes';
-import { SessionId, IRegistrationSuccess } from '../../services/authentication/authentication-service/authentication-service';
-import { string } from 'prop-types';
 import { INetworkRequestFailure } from '../../configuration/interfaces';
+import { AuthenticationErrorCode } from '../../constants/error_codes';
+import {
+    IRegistrationSuccess,
+    SessionId
+} from '../../services/authentication/authentication-service/authentication-service';
+import { INativeLoginRequest, INativeRegistrationRequest } from '../../services/authentication/native-authentication/native-authentication';
 
 export enum AuthenticationActionType {
 
@@ -22,28 +25,16 @@ export enum AuthenticationActionType {
 
 }
 
-interface ILoginStartActionPayload {
-    readonly email: string;
-    readonly password: string;
-}
-
-interface IRegistrationStartActionPayload {
-    readonly email: string;
-    readonly password: string;
-    readonly firstName: string;
-    readonly lastName: string;
-}
-
 export interface AuthenticationActionPayload {
 
-    [AuthenticationActionType.LOGIN_START_NATIVE]: ILoginStartActionPayload;
+    [AuthenticationActionType.LOGIN_START_NATIVE]: INativeLoginRequest;
     [AuthenticationActionType.LOGIN_FAILED]: INetworkRequestFailure<AuthenticationErrorCode>;
     [AuthenticationActionType.LOGIN_SUCCESS_NATIVE]: void;
     [AuthenticationActionType.LOGIN_FINISHED]: void;
 
-    [AuthenticationActionType.REGISTRATION_START]: IRegistrationStartActionPayload;
+    [AuthenticationActionType.REGISTRATION_START]: INativeRegistrationRequest;
     [AuthenticationActionType.REGISTRATION_SUCCESS]: IRegistrationSuccess;
-    [AuthenticationActionType.REGISTRATION_FAILED]: INetworkRequestFailure;
+    [AuthenticationActionType.REGISTRATION_FAILED]: INetworkRequestFailure<AuthenticationErrorCode>;
     [AuthenticationActionType.REGISTRATION_FINISHED]: void;
 
     [AuthenticationActionType.LOGOUT]: void;

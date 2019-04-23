@@ -10,4 +10,5 @@ export interface IUser {
 export interface INetworkRequestFailure<CodeType = string> {
     readonly code: CodeType;
     readonly message: string;
+    readonly meta?: any;
 }

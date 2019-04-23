@@ -15,7 +15,6 @@ interface IFormState<FormDataShape extends Object> {
 
 class Form<FormDataShape extends Object> extends React.Component<IFormProps<FormDataShape>, IFormState<FormDataShape>> {
 
-
     public state: IFormState<FormDataShape>;
 
     constructor(props: IFormProps<FormDataShape>) {
