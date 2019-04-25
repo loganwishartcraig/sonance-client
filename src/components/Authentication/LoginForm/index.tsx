@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect, MapDispatchToProps, MapStateToPropsParam } from 'react-redux';
 import { nativeLoginStart } from '../../../action-creators/authentication';
 import { AuthenticationErrorCode } from '../../../constants/error_codes';
-import { IAppState, IConnectedComponent as IConnectedComponentProps } from '../../../store';
+import { IAppState, IConnectedComponentProps } from '../../../store';
 import Form from '../../Generics/Form';
 
 interface ILoginFormData {

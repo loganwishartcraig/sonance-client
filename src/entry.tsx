@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
-import RouteManager from './components/RouteManager';
+import RouteManager from './components/Routing/RouteManager';
 
 ReactDOM.render(
     <Provider store={store}>

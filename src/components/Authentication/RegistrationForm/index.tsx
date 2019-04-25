@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { connect, MapDispatchToProps, MapStateToPropsParam } from 'react-redux';
 import { AuthenticationErrorCode } from '../../../constants/error_codes';
-import { IAppState, IConnectedComponent as IConnectedComponentProps } from '../../../store';
-import Form from '../../Generics/Form';
+import { IAppState, IConnectedComponentProps } from '../../../store';
+import Form, { IFormValidators } from '../../Generics/Form';
 import { registrationStart } from '../../../action-creators/authentication';
 
 interface IRegistrationFormData {
@@ -27,8 +27,15 @@ interface IRegistrationFormDispatchProps {
 
 type IRegistrationFormProps = IConnectedComponentProps<IRegistrationFormStateProps, IRegistrationFormDispatchProps, {}>;
 
+const validators: IFormValidators<IRegistrationFormData> = {
+    passwordConfirmation: (value, name, context) => {
+        console.warn('validating password conf', { value, name, context }, value === context.password);
+        return value === context.password;
+    },
+};
+
 class RegistrationFormContainer extends Form<IRegistrationFormData> { }
-class LoginForm extends React.Component<IRegistrationFormProps> {
+class RegistrationForm extends React.Component<IRegistrationFormProps> {
 
     private _handleSubmit = (formData: IRegistrationFormData) => {
         this.props.startRegistration(formData);
@@ -38,75 +45,87 @@ class LoginForm extends React.Component<IRegistrationFormProps> {
 
         const { error: { message: errorMessage } } = this.props;
 
-        return <RegistrationFormContainer id={'LoginForm'} onSubmit={this._handleSubmit}>
-            {({ onChange }) => (
-                <div>
-                    <fieldset>
-                        <label className="regForm--label" htmlFor="regForm--input--email">
-                            Email
+        return (
+            <RegistrationFormContainer id={'RegistrationForm'} onSubmit={this._handleSubmit} validators={validators} >
+                {({ onChange }) => (
+                    <div>
+                        <fieldset>
+                            <div>
+                                <label className="regForm--label" htmlFor="regForm--input--email">
+                                    Email
+                                <input
+                                        id="regForm--input--email"
+                                        name="email"
+                                        type="email"
+                                        autoComplete="email"
+                                        onChange={onChange}
+                                        required
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label className="regForm--label" htmlFor="regForm--input--password">
+                                    Password
                             <input
-                                id="regForm--input--email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                onChange={onChange}
-                                required
-                            />
-                        </label>
-                        <label className="regForm--label" htmlFor="regForm--input--password">
-                            Password
+                                        id="regForm--input--password"
+                                        name="password"
+                                        type="password"
+                                        autoComplete="new-password"
+                                        onChange={onChange}
+                                        required
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label className="regForm--label" htmlFor="regForm--input--passwordConfirmation">
+                                    Retype Password
                             <input
-                                id="regForm--input--password"
-                                name="password"
-                                type="password"
-                                autoComplete="new-password"
-                                onChange={onChange}
-                                required
-                            />
-                        </label>
-                        <label className="regForm--label" htmlFor="regForm--input--passwordCheck">
-                            Retype Password
+                                        id="regForm--input--passwordConfirmation"
+                                        name="passwordConfirmation"
+                                        type="password"
+                                        autoComplete="new-password"
+                                        onChange={onChange}
+                                        required
+                                    />
+                                </label>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div>
+                                <label className="regForm--label" htmlFor="regForm--input--fname">
+                                    First Name
                             <input
-                                id="regForm--input--passwordCheck"
-                                name="passwordCheck"
-                                type="password"
-                                autoComplete="new-password"
-                                onChange={onChange}
-                                required
-                            />
-                        </label>
-                    </fieldset>
-                    <fieldset>
-                        <label className="regForm--label" htmlFor="regForm--input--fname">
-                            First Name
+                                        id="regForm--input--fname"
+                                        name="nameFirst"
+                                        type="text"
+                                        autoComplete="given-name"
+                                        onChange={onChange}
+                                        required
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label className="regForm--label" htmlFor="regForm--input--lname">
+                                    Last Name
                             <input
-                                id="regForm--input--fname"
-                                name="nameFirst"
-                                type="text"
-                                autoComplete="given-name"
-                                onChange={onChange}
-                                required
-                            />
-                        </label>
-                        <label className="regForm--label" htmlFor="regForm--input--lname">
-                            Last Name
-                            <input
-                                id="regForm--input--lname"
-                                name="nameLast"
-                                type="text"
-                                autoComplete="family-name"
-                                onChange={onChange}
-                                required
-                            />
-                        </label>
-                    </fieldset>
-                    <button type="submit">
-                        Register
+                                        id="regForm--input--lname"
+                                        name="nameLast"
+                                        type="text"
+                                        autoComplete="family-name"
+                                        onChange={onChange}
+                                        required
+                                    />
+                                </label>
+                            </div>
+                        </fieldset>
+                        <button type="submit">
+                            Register
                     </button>
-                    {errorMessage && <span style={{ color: 'red', display: 'block' }}>{errorMessage}</span>}
-                </div>
-            )}
-        </RegistrationFormContainer>;
+                        {errorMessage && <span style={{ color: 'red', display: 'block' }}>{errorMessage}</span>}
+                    </div>
+                )}
+            </RegistrationFormContainer>
+        );
     }
 
 }
@@ -130,4 +149,4 @@ const dispatchToProps: MapDispatchToProps<
     startRegistration: registrationStart,
 };
 
-export default connect(stateToProps, dispatchToProps)(LoginForm);
+export default connect(stateToProps, dispatchToProps)(RegistrationForm);

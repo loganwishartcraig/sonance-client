@@ -8,7 +8,7 @@ import { IUserState } from '../reducers/user';
 import { rootSaga } from '../sagas';
 import { initialized } from '../action-creators/lifecycle';
 
-export type IConnectedComponent<TStateProps = {}, TDispatchProps = {}, TOwnProps = {}> =
+export type IConnectedComponentProps<TStateProps = {}, TDispatchProps = {}, TOwnProps = {}> =
     TStateProps & TDispatchProps & TOwnProps;
 
 export interface IAppState {
