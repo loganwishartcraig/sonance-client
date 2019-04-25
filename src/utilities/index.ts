@@ -23,4 +23,8 @@ export const Utilities = {
         return new RegExp(`^(.*;)?\s*${cookieName}\s*=\s*[^;]`).test(stringToTest);
     },
 
+    deepClone<T extends Object>(target: T): T {
+        return JSON.parse(JSON.stringify(target));
+    },
+
 };
