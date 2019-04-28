@@ -9,7 +9,7 @@ export interface IAuthenticationState {
     readonly session: SessionId | void;
     readonly loading: boolean;
     readonly error: {
-        readonly code: AuthenticationErrorCode | void;
+        readonly code: string | void;
         readonly message: string | void;
     };
     readonly auth: {

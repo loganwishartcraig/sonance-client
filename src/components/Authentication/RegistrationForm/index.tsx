@@ -16,7 +16,7 @@ interface IRegistrationFormData {
 interface IRegistrationFormStateProps {
     readonly loading: boolean;
     readonly error: {
-        readonly code: AuthenticationErrorCode | void;
+        readonly code: string | void;
         readonly message: string | void;
     };
 }

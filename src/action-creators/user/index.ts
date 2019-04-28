@@ -1,5 +1,5 @@
 import { ActionMap, AnyActionUnion, TypedActionCreator } from '..';
-import { IUser } from '../../configuration/interfaces';
+import { IUser } from '../../models/user';
 
 export enum UserActionType {
     SET_USER = 'USER::SET',

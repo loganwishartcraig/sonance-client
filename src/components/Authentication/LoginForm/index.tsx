@@ -13,7 +13,7 @@ interface ILoginFormData {
 interface ILoginFormStateProps {
     readonly loading: boolean;
     readonly error: {
-        readonly code: AuthenticationErrorCode | void;
+        readonly code: string | void;
         readonly message: string | void;
     };
 }

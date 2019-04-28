@@ -1,5 +1,5 @@
-import { IUser } from '../../configuration/interfaces';
 import { UserActionType, UserAction, setUser, clearUser } from '.';
+import { IUser } from '../../models/user';
 
 const TEST_USER: IUser = {
     email: 'test@test.com',

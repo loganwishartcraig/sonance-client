@@ -91,10 +91,6 @@ class Form<FormDataShape extends Object> extends React.Component<IFormProps<Form
             },
         });
 
-        setTimeout(
-            () => console.warn('updated state', name, value, this.state)
-            , 0
-        );
     }
 
     private _parseInitialStateFromProps({

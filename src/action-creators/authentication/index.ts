@@ -31,13 +31,13 @@ export enum AuthenticationActionType {
 export interface AuthenticationActionPayload {
 
     [AuthenticationActionType.LOGIN_START_NATIVE]: INativeLoginRequest;
-    [AuthenticationActionType.LOGIN_FAILED]: INetworkRequestFailure<AuthenticationErrorCode>;
+    [AuthenticationActionType.LOGIN_FAILED]: INetworkRequestFailure;
     [AuthenticationActionType.LOGIN_SUCCESS_NATIVE]: void;
     [AuthenticationActionType.LOGIN_FINISHED]: void;
 
     [AuthenticationActionType.REGISTRATION_START]: INativeRegistrationRequest;
     [AuthenticationActionType.REGISTRATION_SUCCESS]: IRegistrationSuccess;
-    [AuthenticationActionType.REGISTRATION_FAILED]: INetworkRequestFailure<AuthenticationErrorCode>;
+    [AuthenticationActionType.REGISTRATION_FAILED]: INetworkRequestFailure;
     [AuthenticationActionType.REGISTRATION_FINISHED]: void;
 
     [AuthenticationActionType.LOGOUT]: void;

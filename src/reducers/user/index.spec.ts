@@ -1,6 +1,6 @@
-import { IUser } from '../../configuration/interfaces';
 import { UserAction, UserActionType } from '../../action-creators/user';
 import { IUserState, userReducer } from '.';
+import { IUser } from '../../models/user';
 
 export const testUser: IUser = {
     email: 'test@test.com',
