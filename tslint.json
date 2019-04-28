@@ -47,7 +47,9 @@
         "no-submodule-imports": [
             true,
             "redux-saga/effects",
-            "redux-saga/utils"
+            "redux-saga/utils",
+            "redux-saga-test-plan/matchers",
+            "redux-saga-test-plan/providers"
         ],
         "trailing-comma": [
             true,

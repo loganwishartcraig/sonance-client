@@ -1,15 +1,19 @@
-import { call, put, take } from 'redux-saga/effects';
+import { expectSaga } from 'redux-saga-test-plan';
+import * as matchers from 'redux-saga-test-plan/matchers';
+import { throwError } from 'redux-saga-test-plan/providers';
 import { nativeLoginSaga } from '.';
-import {
-    AuthenticationAction,
-    AuthenticationActionPayload,
-    AuthenticationActionType
-} from '../../action-creators/authentication';
+import { AuthenticationAction, AuthenticationActionType } from '../../action-creators/authentication';
 import { UserAction, UserActionType } from '../../action-creators/user';
-import { GenericError } from '../../common/GenericError';
-import { ILoginSuccess } from '../../services/authentication/authentication-service/authentication-service';
-import NativeAuthentication from '../../services/authentication/native-authentication/native-authentication';
+import Authenticator, {
+    ILoginSuccess, IRegistrationSuccess
+} from '../../services/authentication/authentication-service/authentication-service';
+import NativeAuthentication, {
+    INativeLoginRequest, INativeRegistrationRequest
+} from '../../services/authentication/native-authentication/native-authentication';
 import Logger, { LogLevel } from '../../services/Logger';
+import { GenericError } from '../../common/GenericError';
+import { take } from 'redux-saga/effects';
+import { IUser } from '../../models/user';
 
 jest.mock('../../services/authentication/native-authentication/native-authentication');
 
@@ -17,126 +21,120 @@ jest.mock('../../services/authentication/native-authentication/native-authentica
 // TODO: Add tests for remaining sagas
 describe('Sagas - Authentication', () => {
 
-    it('Should produce the correct nativeLogin happy path sequence', () => {
+    let dummyUser: IUser;
 
-        const service = new NativeAuthentication({ logger: new Logger({ logLevel: LogLevel.NONE }) });
-        const gen = nativeLoginSaga(service);
+    let service: Authenticator;
+    let dummyLoginPayload: INativeLoginRequest;
+    let dummyRegPayload: INativeRegistrationRequest;
 
-        let curs = gen.next();
+    let dummySetUserAction: UserAction['USER::SET'];
 
-        expect(curs.value).toEqual(take('AUTHENTICATION::LOGIN::START::NATIVE'));
+    let dummyNativeLoginAction: AuthenticationAction['AUTHENTICATION::LOGIN::START::NATIVE'];
+    let dummyLoginFinishedAction: AuthenticationAction['AUTHENTICATION::LOGIN::FINISHED'];
 
-        const testPayload: AuthenticationActionPayload[AuthenticationActionType.LOGIN_START_NATIVE] = {
+    beforeEach(() => {
+
+        // Reinitialize variables for consistency.
+
+        dummyUser = {
             email: 'test@test.com',
-            password: 'test_password',
+            firstName: 'Test',
+            lastName: 'User',
+            username: 'testuser',
         };
 
-        const action: AuthenticationAction[AuthenticationActionType.LOGIN_START_NATIVE] = {
-            type: AuthenticationActionType.LOGIN_START_NATIVE,
-            payload: { ...testPayload },
+        service = new NativeAuthentication({ logger: new Logger({ logLevel: LogLevel.NONE }) });
+
+        dummyLoginPayload = {
+            email: 'test@test.com',
+            password: 'testpassword',
         };
 
-        curs = gen.next(action);
-
-        expect(curs.value).toEqual(call([service, service.login], testPayload));
-
-        const loginResult: ILoginSuccess = {
-            user: {
-                email: 'test@test.com',
-                firstName: 'test',
-                lastName: 'user',
-                username: 'test_user',
-            },
+        dummyRegPayload = {
+            email: 'test@test.com',
+            nameFirst: 'Test',
+            nameLast: 'User',
+            password: 'testpassword',
         };
 
-        curs = gen.next(loginResult);
-
-        const setUserAction: UserAction[UserActionType.SET_USER] = {
+        dummySetUserAction = {
             type: UserActionType.SET_USER,
             payload: {
-                user: { ...loginResult.user },
+                user: { ...dummyUser },
             },
         };
 
-        expect(curs.value).toEqual(put(setUserAction));
-
-        curs = gen.next();
-
-        const loginSuccessAction: AuthenticationAction[AuthenticationActionType.LOGIN_SUCCESS_NATIVE] = {
-            type: AuthenticationActionType.LOGIN_SUCCESS_NATIVE,
+        dummyNativeLoginAction = {
+            type: AuthenticationActionType.LOGIN_START_NATIVE,
+            payload: { ...dummyLoginPayload },
         };
 
-        expect(curs.value).toEqual(put(loginSuccessAction));
-
-        curs = gen.next();
-
-        const loginFinishedAction: AuthenticationAction[AuthenticationActionType.LOGIN_FINISHED] = {
+        dummyLoginFinishedAction = {
             type: AuthenticationActionType.LOGIN_FINISHED,
         };
-
-        expect(curs.value).toEqual(put(loginFinishedAction));
-
-        curs = gen.next();
-
-        expect(curs.value).toEqual(take('AUTHENTICATION::LOGIN::START::NATIVE'));
 
     });
 
-    it('Should produce the correct nativeLogin fail path sequence', () => {
+    it('Should produce the correct nativeLogin happy path sequence', () => {
 
-        const service = new NativeAuthentication({ logger: new Logger({ logLevel: LogLevel.NONE }) });
-        const gen = nativeLoginSaga(service);
-
-        let curs = gen.next();
-
-        expect(curs.value).toEqual(take('AUTHENTICATION::LOGIN::START::NATIVE'));
-
-        const testPayload: AuthenticationActionPayload[AuthenticationActionType.LOGIN_START_NATIVE] = {
-            email: 'test@test.com',
-            password: 'test_password',
+        const dummyServiceLoginSuccessPayload: ILoginSuccess = {
+            user: { ...dummyUser },
         };
 
-        const action: AuthenticationAction[AuthenticationActionType.LOGIN_START_NATIVE] = {
-            type: AuthenticationActionType.LOGIN_START_NATIVE,
-            payload: { ...testPayload },
+        const dummyLoginSuccessAction: AuthenticationAction['AUTHENTICATION::LOGIN::SUCCESS::NATIVE'] = {
+            type: AuthenticationActionType.LOGIN_SUCCESS_NATIVE,
         };
 
-        curs = gen.next(action);
+        return expectSaga(nativeLoginSaga, service)
+            .provide([
+                [matchers.call.fn(service.login), dummyServiceLoginSuccessPayload],
+            ])
+            .call([service, service.login], dummyLoginPayload)
+            .put(dummySetUserAction)
+            .put(dummyLoginSuccessAction)
+            .put(dummyLoginFinishedAction)
+            .dispatch(dummyNativeLoginAction)
+            .run();
 
-        expect(curs.value).toEqual(call([service, service.login], testPayload));
+    });
 
-        const loginResult: ILoginSuccess = {
-            user: {
-                email: 'test@test.com',
-                firstName: 'test',
-                lastName: 'user',
-                username: 'test_user',
+    it('Should produce the correct nativeLogin sad path sequence', () => {
+
+        const dummyNetworkError: GenericError = new GenericError({
+            code: 'TEST_ERROR_CODE',
+            message: 'This is a test message',
+        });
+
+        const dummyLoginFailedAction: AuthenticationAction['AUTHENTICATION::LOGIN::FAILED'] = {
+            type: AuthenticationActionType.LOGIN_FAILED,
+            payload: {
+                code: dummyNetworkError.code,
+                message: dummyNetworkError.message,
             },
         };
 
-        const errorCode: any = 'TEST_CODE';
-        const errorMessage = 'test message';
+        return expectSaga(nativeLoginSaga, service)
+            .provide([
+                [matchers.call.fn(service.login), throwError(dummyNetworkError)],
+            ])
+            .call([service, service.login], dummyLoginPayload)
+            .put(dummyLoginFailedAction)
+            .put(dummyLoginFinishedAction)
+            .dispatch(dummyNativeLoginAction)
+            .run();
 
-        curs = (gen as any).throw(new GenericError({ code: errorCode, message: errorMessage }));
+    });
 
-        const loginFailedAction: AuthenticationAction[AuthenticationActionType.LOGIN_FAILED] = {
-            type: AuthenticationActionType.LOGIN_FAILED,
-            payload: { code: errorCode, message: errorMessage },
+    it('Should produce the correct registration happy path sequence', () => {
+
+        const dummyServiceRegSuccessPayload: IRegistrationSuccess = {
+            user: { ...dummyUser },
         };
 
-        expect(curs.value).toEqual(put(loginFailedAction));
-
-        curs = gen.next();
-
-        const loginFinishedAction: AuthenticationAction[AuthenticationActionType.LOGIN_FINISHED] = {
-            type: AuthenticationActionType.LOGIN_FINISHED,
+        const dummyRegSuccessAction: AuthenticationAction['AUTHENTICATION::REGISTRATION::SUCCESS'] = {
+            type: AuthenticationActionType.REGISTRATION_SUCCESS,
+            payload: { user: { ...dummyUser } },
         };
-
-        expect(curs.value).toEqual(put(loginFinishedAction));
-
-        curs = gen.next();
-
-        expect(curs.value).toEqual(take('AUTHENTICATION::LOGIN::START::NATIVE'));
 
     });
 
