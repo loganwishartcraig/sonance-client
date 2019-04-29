@@ -1,14 +1,48 @@
 import Dexie from 'dexie';
-import { IUser } from '../../models/user';
+import { IUser, User } from '../../models/user';
+import { appLogger } from '../Logger';
 
-const DATABASE_NAME = 'SonanceModels';
+const MODEL_DB_NAME = 'SonanceModelDB';
+const MODEL_DB_VERSION = 1;
 
-class DatabaseService extends Dexie {
+const USER_TABLE_INDEX_KEYS: Array<keyof IUser> = ['type'];
 
-    public users: Dexie.Table<IUser, string>;
+export class DatabaseService extends Dexie {
+
+    public users: Dexie.Table<User, string>;
 
     constructor() {
-        super(DATABASE_NAME);
+
+        super(MODEL_DB_NAME);
+        this._initEventListeners();
+        this.version(MODEL_DB_VERSION).stores({
+            users: USER_TABLE_INDEX_KEYS.join(','),
+        });
+
+        this.users.mapToClass(User);
+
+        appLogger.warn({ message: 'Constructed DatabaseService', meta: { instance: this } });
+
+    }
+
+    private _initEventListeners() {
+        window.addEventListener('unhandledrejection', this._handleError);
+        this.on('versionchange', this._handleVersionChange);
+        this.on('ready', this._handleReady);
+    }
+
+    private _handleError = (...args: any[]) => {
+        appLogger.error({ message: 'Database error encountered', meta: { args } });
+    }
+
+    private _handleVersionChange = (...args: any[]) => {
+        appLogger.warn({ message: 'Database version change encountered', meta: { args } });
+    }
+
+    private _handleReady = (...args: any[]) => {
+        appLogger.info({ message: 'Database ready', meta: { args } });
     }
 
 }
+
+export const databaseService = new DatabaseService();
