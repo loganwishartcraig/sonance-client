@@ -17,6 +17,7 @@ const RouteManager: React.FunctionComponent = () => (
             exact
             component={App}
             noAuthComponent={LoginPage}
+        // pendingCacheRender={() => <span>Loading...</span>}
         ></PrivateRoute>
 
         <PrivateRoute
@@ -24,6 +25,7 @@ const RouteManager: React.FunctionComponent = () => (
             exact
             noAuthComponent={LoginPage}
             render={() => <RedirectHome currentLocation="/login" />}
+        // pendingCacheRender={() => <span>Loading...</span>}
         />
 
         <PrivateRoute
@@ -31,6 +33,7 @@ const RouteManager: React.FunctionComponent = () => (
             exact
             noAuthComponent={RegisterPage}
             render={() => <RedirectHome currentLocation="/register" />}
+        // pendingCacheRender={() => <span>Loading...</span>}
         />
 
     </Router>

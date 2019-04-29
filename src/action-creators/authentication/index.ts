@@ -1,6 +1,5 @@
 import { ActionMap, AnyActionUnion, TypedActionCreator } from '..';
 import { INetworkRequestFailure } from '../../configuration/interfaces';
-import { AuthenticationErrorCode } from '../../constants/error_codes';
 import {
     IRegistrationSuccess,
     SessionId
@@ -27,7 +26,7 @@ export enum AuthenticationActionType {
     SET_SESSION = 'AUTHENTICATION::SESSION::SET',
     CLEAR_SESSION = 'AUTHENTICATION::SESSION::CLEAR',
 
-    SET_AUTH_STATE = 'AUTHENTICATION::SET',
+    CACHED_AUTH_RESOLVED = 'AUTHENTICATION::CACHE::RESOLVED',
 
 }
 
@@ -48,7 +47,7 @@ export interface AuthenticationActionPayload {
     [AuthenticationActionType.SET_SESSION]: { session: SessionId };
     [AuthenticationActionType.CLEAR_SESSION]: void;
 
-    [AuthenticationActionType.SET_AUTH_STATE]: { isAuthenticated: boolean };
+    [AuthenticationActionType.CACHED_AUTH_RESOLVED]: { isAuthenticated: boolean };
 
 }
 
@@ -119,7 +118,9 @@ export const clearSession: AuthenticationActionCreator<AuthenticationActionType.
     type: AuthenticationActionType.CLEAR_SESSION,
 });
 
-export const setAuthState: AuthenticationActionCreator<AuthenticationActionType.SET_AUTH_STATE> = (payload) => ({
-    type: AuthenticationActionType.SET_AUTH_STATE,
+export const cachedAuthResolved: AuthenticationActionCreator<
+    AuthenticationActionType.CACHED_AUTH_RESOLVED
+> = (payload) => ({
+    type: AuthenticationActionType.CACHED_AUTH_RESOLVED,
     payload,
 });

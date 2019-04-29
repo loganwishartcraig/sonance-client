@@ -13,6 +13,7 @@ export interface IAuthenticationState {
         readonly message: string | void;
     };
     readonly auth: {
+        readonly cacheResolved: boolean;
         readonly authorized: boolean;
     };
 }
@@ -25,6 +26,7 @@ const defaultState: IAuthenticationState = {
         message: undefined,
     },
     auth: {
+        cacheResolved: false,
         authorized: false,
     },
 };
@@ -57,6 +59,18 @@ const setAuth = (
     produce<IAuthenticationState>(
         state,
         draft => { draft.auth.authorized = true; }
+    );
+
+const setCachedAuth = (
+    state: IAuthenticationState,
+    isAuthenticated: boolean
+): IAuthenticationState =>
+    produce<IAuthenticationState>(
+        state,
+        draft => {
+            draft.auth.authorized = isAuthenticated;
+            draft.auth.cacheResolved = true;
+        }
     );
 
 const setAuthError = (
@@ -130,8 +144,8 @@ const authenticationReducer: Reducer<
         case AuthenticationActionType.CLEAR_SESSION:
             return clearSession(state);
 
-        case AuthenticationActionType.SET_AUTH_STATE:
-            return (action.payload.isAuthenticated) ? setAuth(state) : clearAuth(state);
+        case AuthenticationActionType.CACHED_AUTH_RESOLVED:
+            return setCachedAuth(state, action.payload.isAuthenticated);
 
         default:
             return state;

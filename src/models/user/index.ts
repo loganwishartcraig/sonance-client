@@ -1,33 +1,27 @@
 export const ActiveUserKey: string = 'active';
 
 export interface IUser {
-    readonly firstName: string;
-    readonly lastName: string;
-    readonly middleName?: string;
-    readonly username: string;
     readonly email: string;
-    readonly phoneNumber?: string;
-    readonly type: string;
+    readonly name: {
+        readonly first: string;
+        readonly last: string;
+    };
 }
 
 export class User implements IUser {
 
-    public firstName: string = '';
-    public lastName: string = '';
-    public middleName?: string = '';
-    public username: string = '';
-    public email: string = '';
-    public phoneNumber?: string = '';
-    public type: string = ActiveUserKey;
+    readonly email: string;
+    readonly name: {
+        readonly first: string;
+        readonly last: string;
+    };
 
-    constructor(...args: any[]) {
-        // this.firstName = config.firstName;
-        // this.lastName = config.lastName;
-        // this.middleName = config.middleName;
-        // this.username = config.username;
-        // this.email = config.email;
-        // this.phoneNumber = config.phoneNumber;
+    readonly type: string = ActiveUserKey;
 
-        console.warn('constructed user', args);
+    constructor(config: IUser) {
+
+        this.email = config.email;
+        this.name = { ...config.name };
+        console.warn('constructed user', config);
     }
 }
