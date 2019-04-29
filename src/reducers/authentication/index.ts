@@ -129,6 +129,10 @@ const authenticationReducer: Reducer<
             return setSession(state, action);
         case AuthenticationActionType.CLEAR_SESSION:
             return clearSession(state);
+
+        case AuthenticationActionType.SET_AUTH_STATE:
+            return (action.payload.isAuthenticated) ? setAuth(state) : clearAuth(state);
+
         default:
             return state;
     }

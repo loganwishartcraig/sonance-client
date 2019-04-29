@@ -1,5 +1,5 @@
 import { ActionMap, AnyActionUnion, TypedActionCreator } from '..';
-import { IUser } from '../../models/user';
+import { User } from '../../models/user';
 
 export enum UserActionType {
     SET_USER = 'USER::SET',
@@ -7,7 +7,8 @@ export enum UserActionType {
 }
 
 interface SetUserActionPayload {
-    user: IUser;
+    user: User;
+    noCache?: boolean;
 }
 
 export interface UserActionPayload {

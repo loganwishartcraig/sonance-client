@@ -26,7 +26,6 @@ const middleware = [sagaMiddleware, loggerMiddleware];
 export const store = createStore<IAppState, AnyAppAction, {}, {}>(
     rootReducer,
     applyMiddleware(...middleware)
-
 );
 
 sagaMiddleware.run(rootSaga);

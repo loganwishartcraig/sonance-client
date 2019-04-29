@@ -1,24 +1,11 @@
 import { all, call, put, spawn, take } from 'redux-saga/effects';
-import {
-    AuthenticationAction,
-    AuthenticationActionType,
-    loginFailed,
-    loginFinished,
-    nativeLoginSuccess,
-    registrationSuccess,
-    registrationFailed,
-    registrationFinished
-} from '../../action-creators/authentication';
+import { AuthenticationAction, AuthenticationActionType, loginFailed, loginFinished, nativeLoginSuccess, registrationFailed, registrationFinished, registrationSuccess } from '../../action-creators/authentication';
 import { LifecycleActionType } from '../../action-creators/lifecycle';
 import { setUser } from '../../action-creators/user';
-import Authenticator, {
-    generateSessionId,
-    ILoginSuccess,
-    IRegistrationSuccess
-} from '../../services/authentication/authentication-service/authentication-service';
+import Authenticator, { generateSessionId, ILoginSuccess, IRegistrationSuccess } from '../../services/authentication/authentication-service/authentication-service';
 import NativeAuthentication from '../../services/authentication/native-authentication/native-authentication';
 import Logger from '../../services/Logger';
-import { Utilities } from '../../utilities';
+import { User } from '../../models/user';
 
 const nativeAuthenticationService: NativeAuthentication = new NativeAuthentication({
     logger: new Logger(),
@@ -36,7 +23,7 @@ export const nativeLoginSaga = function* (authenticator: Authenticator) {
 
             const { user }: ILoginSuccess = yield call([authenticator, authenticator.login], payload);
 
-            yield put(setUser({ user }));
+            yield put(setUser({ user: new User(user) }));
             yield put(nativeLoginSuccess());
 
         } catch (e) {
@@ -58,7 +45,8 @@ export const registrationSaga = function* (authenticator: Authenticator) {
 
         try {
 
-            const { user }: IRegistrationSuccess = yield call([authenticator, authenticator.register], payload);
+            const { user: userConfig }: IRegistrationSuccess = yield call([authenticator, authenticator.register], payload);
+            const user = new User(userConfig);
 
             yield put(setUser({ user }));
             yield put(registrationSuccess({ user }));
@@ -87,34 +75,30 @@ const setSession = function* (generateSessionId: () => string) {
 
 };
 
-const authChecker: () => boolean = () => {
-    return Utilities.containsCookie(document.cookie, 'connect.sid');
-};
+// const initializeAuthState = function* (checkCachedAuthState: () => boolean) {
 
-const initializeAuthState = function* (checkCachedAuthState: () => boolean) {
+//     yield take(LifecycleActionType.INITIALIZED);
 
-    yield take(LifecycleActionType.INITIALIZED);
+//     const hasAuth = yield call(checkCachedAuthState);
 
-    const hasAuth = yield call(checkCachedAuthState);
+//     if (hasAuth) {
 
-    if (hasAuth) {
+//         console.warn('has auth');
 
-        console.warn('has auth');
+//         // TODO: abstract this into a 'set_auth' action
+//         const setAuthAction: AuthenticationAction[AuthenticationActionType.LOGIN_SUCCESS_NATIVE] = {
+//             type: AuthenticationActionType.LOGIN_SUCCESS_NATIVE,
+//         };
 
-        // TODO: abstract this into a 'set_auth' action
-        const setAuthAction: AuthenticationAction[AuthenticationActionType.LOGIN_SUCCESS_NATIVE] = {
-            type: AuthenticationActionType.LOGIN_SUCCESS_NATIVE,
-        };
+//         yield put(setAuthAction);
+//     }
 
-        yield put(setAuthAction);
-    }
-
-};
+// };
 
 export const rootAuthSaga = function* () {
     yield all([
         spawn(setSession, generateSessionId),
-        spawn(initializeAuthState, authChecker),
+        // spawn(initializeAuthState, authChecker),
         spawn(nativeLoginSaga, nativeAuthenticationService),
         spawn(registrationSaga, nativeAuthenticationService),
     ]);

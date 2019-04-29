@@ -23,8 +23,11 @@ export enum AuthenticationActionType {
     REGISTRATION_FINISHED = 'AUTHENTICATION::REGISTRATION::FINISHED',
 
     LOGOUT = 'AUTHENTICATION::LOGOUT',
+
     SET_SESSION = 'AUTHENTICATION::SESSION::SET',
     CLEAR_SESSION = 'AUTHENTICATION::SESSION::CLEAR',
+
+    SET_AUTH_STATE = 'AUTHENTICATION::SET',
 
 }
 
@@ -41,8 +44,11 @@ export interface AuthenticationActionPayload {
     [AuthenticationActionType.REGISTRATION_FINISHED]: void;
 
     [AuthenticationActionType.LOGOUT]: void;
+
     [AuthenticationActionType.SET_SESSION]: { session: SessionId };
     [AuthenticationActionType.CLEAR_SESSION]: void;
+
+    [AuthenticationActionType.SET_AUTH_STATE]: { isAuthenticated: boolean };
 
 }
 
@@ -111,4 +117,9 @@ export const setSession: AuthenticationActionCreator<AuthenticationActionType.SE
 
 export const clearSession: AuthenticationActionCreator<AuthenticationActionType.CLEAR_SESSION> = () => ({
     type: AuthenticationActionType.CLEAR_SESSION,
+});
+
+export const setAuthState: AuthenticationActionCreator<AuthenticationActionType.SET_AUTH_STATE> = (payload) => ({
+    type: AuthenticationActionType.SET_AUTH_STATE,
+    payload,
 });

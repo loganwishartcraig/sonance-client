@@ -1,6 +1,6 @@
-import Logger from '../../Logger';
-import { Utilities } from '../../../utilities';
 import { IUser } from '../../../models/user';
+import { Utilities } from '../../../utilities';
+import Logger from '../../Logger';
 
 export interface IAuthenticationService {
     logger: Logger;
