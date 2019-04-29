@@ -19,6 +19,17 @@ export interface ILogMessage {
 }
 
 export default class Logger {
+    private static _MessageSeverityPrefix: {
+        [level in LogLevel]: string;
+    } = {
+            [LogLevel.DEBUG]: '[DEBUG]',
+            [LogLevel.INFO]: '[INFO]',
+            [LogLevel.LOG]: '[LOG]',
+            [LogLevel.WARN]: '[WARN]',
+            [LogLevel.ERROR]: '[ERROR]',
+            [LogLevel.CRITICAL_ERROR]: '[CRITICAL_ERROR]',
+            [LogLevel.NONE]: '[NONE]',
+        };
 
     private _logLevel: LogLevel = LogLevel.NONE;
 
@@ -32,27 +43,37 @@ export default class Logger {
         return severity < this._logLevel;
     }
 
-    private _write(severity: LogLevel, { message, meta }: ILogMessage) {
+    private _write(severity: LogLevel, config: ILogMessage) {
+
+        const args = this._getConsoleArgs(severity, config);
 
         switch (severity) {
             case LogLevel.DEBUG:
-                return void console.debug(`[DEBUG]: ${message}`, meta);
+                return void console.debug.apply(console, args);
             case LogLevel.INFO:
-                return void console.info(`[INFO]: ${message}`, meta);
+                return void console.info.apply(console, args);
             case LogLevel.LOG:
-                return void console.log(`[LOG]: ${message}`, meta);
+                return void console.log.apply(console, args);
             case LogLevel.WARN:
-                return void console.warn(`[WARN]: ${message}`, meta);
+                return void console.warn.apply(console, args);
             case LogLevel.ERROR:
-                return void console.error(`[ERROR]: ${message}`, meta);
+                return void console.error.apply(console, args);
             case LogLevel.CRITICAL_ERROR:
-                return void console.error(`[CRITICAL_ERROR]: ${message}`, meta);
+                return void console.error.apply(console, args);
             case LogLevel.NONE:
                 return;
             default:
-                return void console.log(message, meta);
+                return void console.log(config);
         }
 
+    }
+
+    private _getConsoleArgs(severity: LogLevel, { message, meta }: ILogMessage): [string] | [string, any] {
+
+        const prefix = Logger._MessageSeverityPrefix[severity];
+        const formattedMessage = `[LOGGER] ${prefix}: ${message}`;
+
+        return (meta) ? [formattedMessage, meta] : [formattedMessage];
     }
 
     private _outputMessage(severity: LogLevel, config: ILogMessage) {
