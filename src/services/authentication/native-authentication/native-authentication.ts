@@ -5,7 +5,6 @@ import { GenericErrorCode, NetworkServiceErrorCode } from '../../../constants/er
 import Authenticator, {
     IAuthenticationService,
     ILoginSuccess,
-    ILogoutSuccess,
     IRegistrationSuccess
 } from '../authentication-service/authentication-service';
 
@@ -26,6 +25,7 @@ export default class NativeAuthentication extends Authenticator {
     private static readonly _resourcePaths = {
         login: '/auth/login',
         registration: '/auth/register',
+        logout: '/auth/logout',
     };
 
     constructor(config: IAuthenticationService) {
@@ -65,7 +65,7 @@ export default class NativeAuthentication extends Authenticator {
     public async login(payload: INativeLoginRequest): Promise<ILoginSuccess> {
 
         const url = `${SONANCE_API_ENDPOINT}${NativeAuthentication._resourcePaths.login}`;
-        const response = await this.postJson(url, payload);
+        const response = await this.post(url, payload);
 
         if (!response.ok) {
             throw await this._resolveErrorFromResponse(response);
@@ -78,7 +78,7 @@ export default class NativeAuthentication extends Authenticator {
     public async register(payload: INativeRegistrationRequest): Promise<IRegistrationSuccess> {
 
         const url = `${SONANCE_API_ENDPOINT}${NativeAuthentication._resourcePaths.registration}`;
-        const response = await this.postJson(url, payload);
+        const response = await this.post(url, payload);
 
         if (!response.ok) {
             throw await this._resolveErrorFromResponse(response);
@@ -88,17 +88,14 @@ export default class NativeAuthentication extends Authenticator {
 
     }
 
-    public async logout(): Promise<ILogoutSuccess> {
+    public async logout(): Promise<void> {
 
-        await new Promise(r => {
+        const url = `${SONANCE_API_ENDPOINT}${NativeAuthentication._resourcePaths.logout}`;
+        const response = await this.post(url);
 
-            setTimeout(() => r(), 2000);
-
-        });
-
-        return {
-            message: 'logout OK',
-        };
+        if (!response.ok) {
+            throw await this._resolveErrorFromResponse(response);
+        }
 
     }
 

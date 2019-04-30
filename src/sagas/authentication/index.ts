@@ -2,10 +2,11 @@ import { all, call, put, spawn, take } from 'redux-saga/effects';
 import { AuthenticationAction, AuthenticationActionType, loginFailed, loginFinished, nativeLoginSuccess, registrationFailed, registrationFinished, registrationSuccess } from '../../action-creators/authentication';
 import { LifecycleActionType } from '../../action-creators/lifecycle';
 import { setUser } from '../../action-creators/user';
+import { User } from '../../models/user';
 import Authenticator, { generateSessionId, ILoginSuccess, IRegistrationSuccess } from '../../services/authentication/authentication-service/authentication-service';
 import NativeAuthentication from '../../services/authentication/native-authentication/native-authentication';
-import Logger from '../../services/Logger';
-import { User } from '../../models/user';
+import Logger, { appLogger } from '../../services/Logger';
+import { Utilities } from '../../utilities';
 
 const nativeAuthenticationService: NativeAuthentication = new NativeAuthentication({
     logger: new Logger(),
@@ -45,7 +46,11 @@ export const registrationSaga = function* (authenticator: Authenticator) {
 
         try {
 
-            const { user: userConfig }: IRegistrationSuccess = yield call([authenticator, authenticator.register], payload);
+            const { user: userConfig }: IRegistrationSuccess = yield call(
+                [authenticator, authenticator.register],
+                payload
+            );
+
             const user = new User(userConfig);
 
             yield put(setUser({ user }));
@@ -75,31 +80,36 @@ const setSession = function* (generateSessionId: () => string) {
 
 };
 
-// const initializeAuthState = function* (checkCachedAuthState: () => boolean) {
+export const clearAuthCache = function* (cacheClearer: () => void) {
 
-//     yield take(LifecycleActionType.INITIALIZED);
+    while (yield take(AuthenticationActionType.LOGOUT)) {
 
-//     const hasAuth = yield call(checkCachedAuthState);
+        yield call(cacheClearer);
 
-//     if (hasAuth) {
+    }
 
-//         console.warn('has auth');
+};
 
-//         // TODO: abstract this into a 'set_auth' action
-//         const setAuthAction: AuthenticationAction[AuthenticationActionType.LOGIN_SUCCESS_NATIVE] = {
-//             type: AuthenticationActionType.LOGIN_SUCCESS_NATIVE,
-//         };
+export const logUserOut = function* (authenticator: Authenticator) {
 
-//         yield put(setAuthAction);
-//     }
+    while (yield take(AuthenticationActionType.LOGOUT)) {
 
-// };
+        try {
+            yield call([authenticator, authenticator.logout]);
+        } catch (e) {
+            appLogger.error({ message: 'Failed to log the user out', meta: { e } });
+        }
+
+    }
+
+};
 
 export const rootAuthSaga = function* () {
     yield all([
         spawn(setSession, generateSessionId),
-        // spawn(initializeAuthState, authChecker),
         spawn(nativeLoginSaga, nativeAuthenticationService),
         spawn(registrationSaga, nativeAuthenticationService),
+        spawn(clearAuthCache, Utilities.removeCookie.bind(Utilities, Authenticator.AuthCookieKey)),
+        spawn(logUserOut, nativeAuthenticationService),
     ]);
 };

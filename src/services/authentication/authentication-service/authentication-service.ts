@@ -14,15 +14,13 @@ export interface IRegistrationSuccess {
     user: IUser;
 }
 
-export interface ILogoutSuccess {
-    message: string;
-}
-
 export type SessionId = string;
 
 export const generateSessionId = (): SessionId => Utilities.generateRandomId();
 
 abstract class Authenticator {
+
+    public static AuthCookieKey: string = 'connect.sid';
 
     protected _logger: Logger;
 
@@ -32,19 +30,25 @@ abstract class Authenticator {
 
     public abstract login(payload: any): Promise<ILoginSuccess>;
     public abstract register(payload: any): Promise<IRegistrationSuccess>;
-    public abstract logout(): Promise<ILogoutSuccess>;
+    public abstract logout(): Promise<void>;
 
-    public async postJson<J extends Object>(url: string, payload: J): Promise<Response> {
+    //  TODO: Should throw a 'GenericError' on 'fetch' throw.
+    public async post<J extends Object>(url: string, payload?: J): Promise<Response> {
 
-        return fetch(url, {
+        const fetchOptions: RequestInit = {
             method: 'POST',
             credentials: 'include',
             headers: {
                 Accept: 'application/json',
-                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload),
-        });
+        };
+
+        if (payload) {
+            fetchOptions.headers['Content-Type'] = 'application/json';
+            fetchOptions.body = JSON.stringify(payload);
+        }
+
+        return fetch(url);
 
     }
 

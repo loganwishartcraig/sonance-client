@@ -19,8 +19,13 @@ export const Utilities = {
         }
     },
 
-    containsCookie(stringToTest: string, cookieName: string): boolean {
-        return new RegExp(`^(.*;)?\s*${cookieName}\s*=\s*[^;]`).test(stringToTest);
+    cookieIsSet(cookieName: string, target: string = document.cookie): boolean {
+        return new RegExp(`^(.*;)?\s*${cookieName}\s*=\s*[^;]`).test(target);
+    },
+
+    removeCookie(cookieName: string, target: string = document.cookie): void {
+        // TODO: allow just removing the single cookie, not all cookies.
+        document.cookie = `${cookieName}=; Path=/; Max-Age=0;`;
     },
 
     deepClone<T extends Object>(target: T): T {

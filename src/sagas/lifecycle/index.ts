@@ -8,10 +8,7 @@ import { ActiveUserKey, User, IUser } from '../../models/user';
 import { GenericError } from '../../common/GenericError';
 import { DatabaseServiceErrorCode } from '../../constants/error_codes';
 import { LifecycleActionType } from '../../action-creators/lifecycle';
-
-const authIsCached: () => boolean = () => {
-    return Utilities.containsCookie(document.cookie, 'connect.sid');
-};
+import Authenticator from '../../services/authentication/authentication-service/authentication-service';
 
 const bootstrapUser = function* (authIsCached: () => boolean, dbService: DatabaseService) {
 
@@ -53,6 +50,10 @@ const bootstrapUser = function* (authIsCached: () => boolean, dbService: Databas
 
 export const rootLifecycleSaga = function* () {
     yield all([
-        spawn(bootstrapUser, authIsCached, databaseService),
+        spawn(
+            bootstrapUser,
+            Utilities.cookieIsSet.bind(Utilities, Authenticator.AuthCookieKey),
+            databaseService
+        ),
     ]);
 };

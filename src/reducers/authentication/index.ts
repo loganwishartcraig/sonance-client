@@ -2,7 +2,6 @@ import produce from 'immer';
 import { Reducer } from 'react';
 import { AnyAppAction } from '../../action-creators';
 import { AuthenticationAction, AuthenticationActionType } from '../../action-creators/authentication';
-import { AuthenticationErrorCode } from '../../constants/error_codes';
 import { SessionId } from '../../services/authentication/authentication-service/authentication-service';
 
 export interface IAuthenticationState {
@@ -42,7 +41,12 @@ const clearAuth = (
 ): IAuthenticationState =>
     produce<IAuthenticationState>(
         state,
-        draft => { draft.auth = { ...defaultState.auth }; }
+        draft => {
+            draft.auth = {
+                ...draft.auth,
+                authorized: false,
+            };
+        }
     );
 
 const clearLoadingFlag = (
