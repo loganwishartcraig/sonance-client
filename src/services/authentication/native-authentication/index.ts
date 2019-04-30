@@ -6,7 +6,7 @@ import Authenticator, {
     IAuthenticationService,
     ILoginSuccess,
     IRegistrationSuccess
-} from '../authentication-service/authentication-service';
+} from '../authentication-service';
 
 export interface INativeLoginRequest {
     readonly email: string;

@@ -1,8 +1,8 @@
 import produce from 'immer';
 import { Reducer } from 'react';
-import { AnyAppAction } from '../../action-creators';
-import { AuthenticationAction, AuthenticationActionType } from '../../action-creators/authentication';
-import { SessionId } from '../../services/authentication/authentication-service/authentication-service';
+import { AnyAppAction } from '../../actions';
+import { AuthenticationAction, AuthenticationActionType } from '../../actions/authentication';
+import { SessionId } from '../../services/authentication/authentication-service';
 
 export interface IAuthenticationState {
     readonly session: SessionId | void;

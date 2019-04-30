@@ -1,10 +1,15 @@
 import { all, call, put, spawn, take } from 'redux-saga/effects';
-import { AuthenticationAction, AuthenticationActionType, loginFailed, loginFinished, nativeLoginSuccess, registrationFailed, registrationFinished, registrationSuccess } from '../../action-creators/authentication';
-import { LifecycleActionType } from '../../action-creators/lifecycle';
+import * as AuthActionCreators from '../../action-creators/authentication';
 import { setUser } from '../../action-creators/user';
+import { AuthenticationAction, AuthenticationActionType } from '../../actions/authentication';
+import { LifecycleActionType } from '../../actions/lifecycle';
 import { User } from '../../models/user';
-import Authenticator, { generateSessionId, ILoginSuccess, IRegistrationSuccess } from '../../services/authentication/authentication-service/authentication-service';
-import NativeAuthentication from '../../services/authentication/native-authentication/native-authentication';
+import Authenticator, {
+    generateSessionId,
+    ILoginSuccess,
+    IRegistrationSuccess
+} from '../../services/authentication/authentication-service';
+import NativeAuthentication from '../../services/authentication/native-authentication';
 import Logger, { appLogger } from '../../services/Logger';
 import { Utilities } from '../../utilities';
 
@@ -25,12 +30,12 @@ export const nativeLoginSaga = function* (authenticator: Authenticator) {
             const { user }: ILoginSuccess = yield call([authenticator, authenticator.login], payload);
 
             yield put(setUser({ user: new User(user) }));
-            yield put(nativeLoginSuccess());
+            yield put(AuthActionCreators.nativeLoginSuccess());
 
         } catch (e) {
-            yield put(loginFailed({ code: e.code, message: e.message }));
+            yield put(AuthActionCreators.loginFailed({ code: e.code, message: e.message }));
         } finally {
-            yield put(loginFinished());
+            yield put(AuthActionCreators.loginFinished());
         }
     }
 
@@ -54,12 +59,12 @@ export const registrationSaga = function* (authenticator: Authenticator) {
             const user = new User(userConfig);
 
             yield put(setUser({ user }));
-            yield put(registrationSuccess({ user }));
+            yield put(AuthActionCreators.registrationSuccess({ user }));
 
         } catch (e) {
-            yield put(registrationFailed({ code: e.code, message: e.message }));
+            yield put(AuthActionCreators.registrationFailed({ code: e.code, message: e.message }));
         } finally {
-            yield put(registrationFinished());
+            yield put(AuthActionCreators.registrationFinished());
         }
 
     }

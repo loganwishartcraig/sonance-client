@@ -1,7 +1,7 @@
 import produce from 'immer';
 import { Reducer } from 'redux';
-import { AnyAppAction } from '../../action-creators';
-import { UserActionType } from '../../action-creators/user';
+import { AnyAppAction } from '../../actions';
+import { UserActionType } from '../../actions/user';
 import { IUser } from '../../models/user';
 
 export type IUserState = IUser | null;

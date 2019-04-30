@@ -1,8 +1,8 @@
-import { all, call, put, spawn, take, takeLatest } from 'redux-saga/effects';
+import { all, call, spawn, take, takeLatest } from 'redux-saga/effects';
+import { AuthenticationActionType } from '../../actions/authentication';
+import { UserAction, UserActionType } from '../../actions/user';
 import { DatabaseService, databaseService } from '../../services/database';
-import { UserActionType, UserAction } from '../../action-creators/user';
 import { appLogger } from '../../services/Logger';
-import { AuthenticationActionType } from '../../action-creators/authentication';
 
 export const cacheUser = function* (dbService: DatabaseService) {
 

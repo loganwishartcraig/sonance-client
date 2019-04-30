@@ -1,22 +1,4 @@
-import { AnyAuthenticationAction } from './authentication';
-import { AnyUserAction } from './user';
-import { AnyLifecycleAction } from './lifecycle';
-
-export type ActionType = string;
-
-export type Action<T extends ActionType, P = void> =
-    P extends void ? { type: T } : { type: T, payload: P };
+import { Action, ActionType } from '../actions';
 
 export type TypedActionCreator<T extends ActionType, P = void> =
     P extends void ? () => Action<T> : (payload: P) => Action<T, P>;
-
-export type ActionMap<A extends string, P extends any> = {
-    [action in A]: Action<action, P[action]>;
-};
-
-export type AnyActionUnion<A extends ActionMap<any, any>> = A[keyof A];
-
-export type AnyAppAction =
-    AnyAuthenticationAction
-    | AnyUserAction
-    | AnyLifecycleAction;

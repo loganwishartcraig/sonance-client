@@ -1,24 +1,7 @@
-import { ActionMap, AnyActionUnion, TypedActionCreator } from '..';
-import { User } from '../../models/user';
-
-export enum UserActionType {
-    SET_USER = 'USER::SET',
-    CLEAR_USER = 'USER::CLEAR',
-}
-
-interface SetUserActionPayload {
-    user: User;
-    noCache?: boolean;
-}
-
-export interface UserActionPayload {
-    [UserActionType.SET_USER]: SetUserActionPayload;
-    [UserActionType.CLEAR_USER]: void;
-}
+import { TypedActionCreator } from '..';
+import { UserActionType, UserActionPayload } from '../../actions/user';
 
 export type UserActionCreator<T extends UserActionType> = TypedActionCreator<T, UserActionPayload[T]>;
-export type UserAction = ActionMap<UserActionType, UserActionPayload>;
-export type AnyUserAction = AnyActionUnion<UserAction>;
 
 export const setUser: UserActionCreator<UserActionType.SET_USER> = (payload) => ({
     type: UserActionType.SET_USER,

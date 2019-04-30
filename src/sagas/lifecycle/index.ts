@@ -1,14 +1,14 @@
 import { all, call, put, spawn, take } from 'redux-saga/effects';
-import { databaseService, DatabaseService } from '../../services/database';
-import { Utilities } from '../../utilities';
-import * as CreateUserAction from '../../action-creators/user';
 import * as CreateAuthAction from '../../action-creators/authentication';
-import { appLogger } from '../../services/Logger';
-import { ActiveUserKey, User, IUser } from '../../models/user';
+import * as CreateUserAction from '../../action-creators/user';
+import { LifecycleActionType } from '../../actions/lifecycle';
 import { GenericError } from '../../common/GenericError';
 import { DatabaseServiceErrorCode } from '../../constants/error_codes';
-import { LifecycleActionType } from '../../action-creators/lifecycle';
-import Authenticator from '../../services/authentication/authentication-service/authentication-service';
+import { ActiveUserKey, User } from '../../models/user';
+import Authenticator from '../../services/authentication/authentication-service';
+import { databaseService, DatabaseService } from '../../services/database';
+import { appLogger } from '../../services/Logger';
+import { Utilities } from '../../utilities';
 
 const bootstrapUser = function* (authIsCached: () => boolean, dbService: DatabaseService) {
 

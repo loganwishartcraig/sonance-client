@@ -35,18 +35,21 @@ abstract class Authenticator {
     //  TODO: Should throw a 'GenericError' on 'fetch' throw.
     public async post<J extends Object>(url: string, payload?: J): Promise<Response> {
 
+        const headers: Record<string, string> = {
+            Accept: 'application/json',
+        };
+
         const fetchOptions: RequestInit = {
             method: 'POST',
             credentials: 'include',
-            headers: {
-                Accept: 'application/json',
-            },
         };
 
         if (payload) {
-            fetchOptions.headers['Content-Type'] = 'application/json';
+            headers['Content-Type'] = 'application/json';
             fetchOptions.body = JSON.stringify(payload);
         }
+
+        fetchOptions.headers = headers;
 
         return fetch(url);
 

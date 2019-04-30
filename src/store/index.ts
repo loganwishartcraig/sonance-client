@@ -1,7 +1,7 @@
 import { applyMiddleware, createStore } from 'redux';
 import { createLogger } from 'redux-logger';
 import createSagaMiddleware from 'redux-saga';
-import { AnyAppAction } from '../action-creators';
+import { AnyAppAction } from '../actions';
 import rootReducer from '../reducers';
 import { IAuthenticationState } from '../reducers/authentication';
 import { IUserState } from '../reducers/user';

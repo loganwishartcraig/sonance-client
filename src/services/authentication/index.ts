@@ -1,3 +1,3 @@
-import * as NativeAuthentication from './native-authentication/native-authentication';
+import * as NativeAuthentication from './native-authentication';
 
 export { NativeAuthentication };
