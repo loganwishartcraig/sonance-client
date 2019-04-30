@@ -8,6 +8,7 @@ import {
     INativeLoginRequest,
     INativeRegistrationRequest
 } from '../../services/authentication/native-authentication/native-authentication';
+import { User, IUser } from '../../models/user';
 
 export enum AuthenticationActionType {
 
@@ -38,7 +39,7 @@ export interface AuthenticationActionPayload {
     [AuthenticationActionType.LOGIN_FINISHED]: void;
 
     [AuthenticationActionType.REGISTRATION_START]: INativeRegistrationRequest;
-    [AuthenticationActionType.REGISTRATION_SUCCESS]: IRegistrationSuccess;
+    [AuthenticationActionType.REGISTRATION_SUCCESS]: { user: IUser };
     [AuthenticationActionType.REGISTRATION_FAILED]: INetworkRequestFailure;
     [AuthenticationActionType.REGISTRATION_FINISHED]: void;
 
