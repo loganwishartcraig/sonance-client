@@ -1,21 +1,8 @@
-import {
-    AuthenticationAction,
-    AuthenticationActionType,
-    clearSession,
-    loginFailed,
-    loginFinished,
-    logout,
-    nativeLoginStart,
-    nativeLoginSuccess,
-    setSession,
-    registrationFinished,
-    registrationSuccess,
-    registrationFailed,
-    cachedAuthResolved
-} from '.';
-import { SessionId } from '../../services/authentication/authentication-service/authentication-service';
-import { User, IUser } from '../../models/user';
-import { INativeRegistrationRequest } from '../../services/authentication/native-authentication/native-authentication';
+import * as AuthActionCreators from '.';
+import { IUser } from '../../models/user';
+import { SessionId } from '../../services/authentication/authentication-service';
+import { INativeRegistrationRequest } from '../../services/authentication/native-authentication';
+import { AuthenticationActionType, AuthenticationAction } from '../../actions/authentication';
 
 // TODO: Add tests for new action creators
 
@@ -52,7 +39,7 @@ describe('ActionCreator - Authentication', () => {
             payload: { email, password, },
         };
 
-        const action = nativeLoginStart({ email, password });
+        const action = AuthActionCreators.nativeLoginStart({ email, password });
 
         expect(action).toEqual(expected);
 
@@ -70,7 +57,7 @@ describe('ActionCreator - Authentication', () => {
             payload: { ...errPayload },
         };
 
-        const action = loginFailed({ ...errPayload });
+        const action = AuthActionCreators.loginFailed({ ...errPayload });
 
         expect(action).toEqual(expected);
 
@@ -82,7 +69,7 @@ describe('ActionCreator - Authentication', () => {
             type: AuthenticationActionType.LOGIN_SUCCESS_NATIVE,
         };
 
-        const action = nativeLoginSuccess();
+        const action = AuthActionCreators.nativeLoginSuccess();
 
         expect(action).toEqual(expected);
 
@@ -94,7 +81,7 @@ describe('ActionCreator - Authentication', () => {
             type: AuthenticationActionType.LOGIN_FINISHED,
         };
 
-        const action = loginFinished();
+        const action = AuthActionCreators.loginFinished();
 
         expect(action).toEqual(expected);
 
@@ -114,7 +101,7 @@ describe('ActionCreator - Authentication', () => {
             payload: { ...regPayload },
         };
 
-        const action = nativeLoginStart({ ...regPayload });
+        const action = AuthActionCreators.nativeLoginStart({ ...regPayload });
 
         expect(action).toEqual(expected);
 
@@ -136,7 +123,7 @@ describe('ActionCreator - Authentication', () => {
             payload: { user: { ...testUser } },
         };
 
-        const action = registrationSuccess({ user: { ...testUser } });
+        const action = AuthActionCreators.registrationSuccess({ user: { ...testUser } });
 
         expect(action).toEqual(expected);
 
@@ -154,7 +141,7 @@ describe('ActionCreator - Authentication', () => {
             payload: { ...errPayload },
         };
 
-        const action = registrationFailed({ ...errPayload });
+        const action = AuthActionCreators.registrationFailed({ ...errPayload });
 
         expect(action).toEqual(expected);
 
@@ -166,7 +153,7 @@ describe('ActionCreator - Authentication', () => {
             type: AuthenticationActionType.REGISTRATION_FINISHED,
         };
 
-        const action = registrationFinished();
+        const action = AuthActionCreators.registrationFinished();
 
         expect(action).toEqual(expected);
 
@@ -178,7 +165,7 @@ describe('ActionCreator - Authentication', () => {
             type: AuthenticationActionType.LOGOUT,
         };
 
-        const action = logout();
+        const action = AuthActionCreators.logout();
 
         expect(action).toEqual(expected);
 
@@ -193,7 +180,7 @@ describe('ActionCreator - Authentication', () => {
             payload: { session: testSessionId },
         };
 
-        const action = setSession({ session: testSessionId });
+        const action = AuthActionCreators.setSession({ session: testSessionId });
 
         expect(action).toEqual(expected);
 
@@ -205,7 +192,7 @@ describe('ActionCreator - Authentication', () => {
             type: AuthenticationActionType.CLEAR_SESSION,
         };
 
-        const action = clearSession();
+        const action = AuthActionCreators.clearSession();
 
         expect(action).toEqual(expected);
 
@@ -218,7 +205,7 @@ describe('ActionCreator - Authentication', () => {
             payload: Object.freeze({ isAuthenticated: true }),
         };
 
-        const action = cachedAuthResolved({ isAuthenticated: true });
+        const action = AuthActionCreators.cachedAuthResolved({ isAuthenticated: true });
 
         expect(action).toEqual(expected);
 

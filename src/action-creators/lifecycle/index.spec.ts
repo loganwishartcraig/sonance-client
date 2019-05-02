@@ -1,4 +1,5 @@
-import { LifecycleActionType, LifecycleAction, initialized } from '.';
+import * as LifecycleActionCreators from '.';
+import { LifecycleActionType, LifecycleAction } from '../../actions/lifecycle';
 
 describe('ActionCreator - Lifecycle', () => {
 
@@ -13,7 +14,7 @@ describe('ActionCreator - Lifecycle', () => {
             type: 'LIFECYCLE::INITIALIZED' as any,
         };
 
-        const action = initialized();
+        const action = LifecycleActionCreators.initialized();
 
         expect(action).toEqual(expected);
 

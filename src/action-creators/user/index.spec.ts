@@ -1,14 +1,22 @@
-import { UserActionType, UserAction, setUser, clearUser } from '.';
+import * as UserActionCreator from '.';
 import { IUser } from '../../models/user';
-
-const TEST_USER: IUser = {
-    email: 'test@test.com',
-    firstName: 'f_name',
-    lastName: 'l_name',
-    username: 'test_user',
-};
+import { UserActionType, UserAction } from '../../actions/user';
 
 describe('ActionCreators - User', () => {
+
+    let dummyUser: IUser;
+
+    beforeEach(() => {
+
+        dummyUser = {
+            email: 'test@test.com',
+            name: {
+                first: 'Test',
+                last: 'User',
+            },
+        };
+
+    });
 
     it('Should produce the right action types', () => {
         expect(Object.values(UserActionType).length).toBe(2);
@@ -20,10 +28,10 @@ describe('ActionCreators - User', () => {
 
         const expected: UserAction[UserActionType.SET_USER] = {
             type: UserActionType.SET_USER,
-            payload: { user: { ...TEST_USER } },
+            payload: { user: { ...dummyUser } },
         };
 
-        const action = setUser({ user: { ...TEST_USER } });
+        const action = UserActionCreator.setUser({ user: { ...dummyUser } });
 
         expect(action).toEqual(expected);
 
@@ -35,7 +43,7 @@ describe('ActionCreators - User', () => {
             type: UserActionType.CLEAR_USER,
         };
 
-        const action = clearUser();
+        const action = UserActionCreator.clearUser();
 
         expect(action).toEqual(expected);
 
