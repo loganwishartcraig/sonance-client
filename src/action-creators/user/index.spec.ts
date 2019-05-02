@@ -18,12 +18,6 @@ describe('ActionCreators - User', () => {
 
     });
 
-    it('Should produce the right action types', () => {
-        expect(Object.values(UserActionType).length).toBe(2);
-        expect(UserActionType.SET_USER).toBe('USER::SET');
-        expect(UserActionType.CLEAR_USER).toBe('USER::CLEAR');
-    });
-
     it('Should produce the right SET_USER action', () => {
 
         const expected: UserAction[UserActionType.SET_USER] = {
