@@ -51,7 +51,7 @@ abstract class Authenticator {
 
         fetchOptions.headers = headers;
 
-        return fetch(url);
+        return fetch(url, fetchOptions);
 
     }
 
