@@ -10,10 +10,8 @@ describe('ActionCreators - User', () => {
 
         dummyUser = {
             email: 'test@test.com',
-            name: {
-                first: 'Test',
-                last: 'User',
-            },
+            firstName: 'Test',
+            lastName: 'User',
         };
 
     });

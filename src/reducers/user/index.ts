@@ -2,9 +2,13 @@ import produce from 'immer';
 import { Reducer } from 'redux';
 import { AnyAppAction } from '../../actions';
 import { UserActionType } from '../../actions/user';
-import { IUser } from '../../models/user';
+import { IUser, User } from '../../models/user';
 
 export type IUserState = IUser | null;
+
+export const setUser = (
+    userConfig: IUser
+): IUserState => ({ ...userConfig });
 
 export const userReducer: Reducer<IUserState, AnyAppAction> = (oldState = null, action): IUserState => {
 
@@ -12,7 +16,7 @@ export const userReducer: Reducer<IUserState, AnyAppAction> = (oldState = null, 
         case UserActionType.CLEAR_USER:
             return null;
         case UserActionType.SET_USER:
-            return produce<IUserState>(oldState, (draft: IUserState) => ({ ...action.payload.user }));
+            return setUser(action.payload.user);
         default:
             return oldState;
     }

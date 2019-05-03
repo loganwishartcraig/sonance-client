@@ -1,15 +1,15 @@
 import Dexie from 'dexie';
-import { User } from '../../models/user';
+import { IUser, User } from '../../models/user';
 import { appLogger } from '../Logger';
 
 const MODEL_DB_NAME = 'SonanceModelDB';
 const MODEL_DB_VERSION = 1;
 
-const USER_TABLE_INDEX_KEYS: Array<keyof User> = ['type'];
+const USER_TABLE_INDEX_KEYS: Array<keyof IUser> = ['email'];
 
 export class DatabaseService extends Dexie {
 
-    public users: Dexie.Table<User, string>;
+    public users: Dexie.Table<IUser, string>;
 
     constructor() {
 
@@ -20,7 +20,6 @@ export class DatabaseService extends Dexie {
         });
 
         this.users = this.table('users');
-        this.users.mapToClass(User);
 
     }
 

@@ -80,7 +80,7 @@ describe('ActionCreator - Authentication', () => {
             payload: { ...regPayload },
         };
 
-        const action = AuthActionCreators.nativeLoginStart({ ...regPayload });
+        const action = AuthActionCreators.registrationStart({ ...regPayload });
 
         expect(action).toEqual(expected);
 
@@ -89,13 +89,11 @@ describe('ActionCreator - Authentication', () => {
     it('Should produce the right REGISTRATION_SUCCESS action', () => {
 
         // TODO: Figure out how to remove this dep.
-        const testUser: IUser = {
+        const testUser: IUser = Object.freeze({
             email: 'test@test.com',
-            name: Object.freeze({
-                first: 'test',
-                last: 'test',
-            }),
-        };
+            firstName: 'test',
+            lastName: 'test',
+        });
 
         const expected: AuthenticationAction[AuthenticationActionType.REGISTRATION_SUCCESS] = {
             type: AuthenticationActionType.REGISTRATION_SUCCESS,

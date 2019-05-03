@@ -4,7 +4,7 @@ import * as CreateUserAction from '../../action-creators/user';
 import { LifecycleActionType } from '../../actions/lifecycle';
 import { GenericError } from '../../common/GenericError';
 import { DatabaseServiceErrorCode } from '../../constants/error_codes';
-import { ActiveUserKey, User } from '../../models/user';
+import { ActiveUserKey, User, IUser } from '../../models/user';
 import Authenticator from '../../services/authentication/authentication-service';
 import { databaseService, DatabaseService } from '../../services/database';
 import { appLogger } from '../../services/Logger';
@@ -19,7 +19,7 @@ const bootstrapUser = function* (authIsCached: () => boolean, dbService: Databas
         try {
 
             // FIXME: Figure out a way to remove the 'any' cast here
-            const user: User = yield call([dbService.users, dbService.users.get as any], ActiveUserKey);
+            const user: IUser = yield call([dbService.users, dbService.users.get as any], ActiveUserKey);
             appLogger.log({ message: 'got cached user', meta: { userConfig: user } });
             if (!user) {
                 throw new GenericError({

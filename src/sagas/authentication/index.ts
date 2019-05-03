@@ -29,7 +29,7 @@ export const nativeLoginSaga = function* (authenticator: Authenticator) {
 
             const { user }: ILoginSuccess = yield call([authenticator, authenticator.login], payload);
 
-            yield put(setUser({ user: new User(user) }));
+            yield put(setUser({ user }));
             yield put(AuthActionCreators.nativeLoginSuccess());
 
         } catch (e) {
@@ -51,12 +51,10 @@ export const registrationSaga = function* (authenticator: Authenticator) {
 
         try {
 
-            const { user: userConfig }: IRegistrationSuccess = yield call(
+            const { user }: IRegistrationSuccess = yield call(
                 [authenticator, authenticator.register],
                 payload
             );
-
-            const user = new User(userConfig);
 
             yield put(setUser({ user }));
             yield put(AuthActionCreators.registrationSuccess({ user }));

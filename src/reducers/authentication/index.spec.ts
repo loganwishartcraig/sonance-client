@@ -1,70 +1,85 @@
 import authenticationReducer, { IAuthenticationState } from '.';
-import { AuthenticationAction, AuthenticationActionType } from '../../action-creators/authentication';
-import { ILoginSuccess } from '../../services/authentication/authentication-service/authentication-service';
-import { testUser } from '../user/index.spec';
-
-const testInitialState: IAuthenticationState = {
-    session: undefined,
-    loading: false,
-    error: {
-        code: undefined,
-        message: undefined,
-    },
-    auth: {
-        authorized: false,
-    },
-};
-
-const testPopulatedState: IAuthenticationState = {
-    session: 'xxx-xxx-xxx-xxx-session-id',
-    loading: false,
-    error: {
-        code: undefined,
-        message: undefined,
-    },
-    auth: {
-        authorized: true,
-    },
-};
-
-const generateStateClone = (base: IAuthenticationState): IAuthenticationState => ({
-    ...base,
-    error: { ...base.error },
-    auth: { ...base.auth },
-});
+import { AuthenticationAction, AuthenticationActionType } from '../../actions/authentication';
+import { Utilities } from '../../utilities';
 
 describe('Reducers - Authentication', () => {
 
+    let testInitialState: IAuthenticationState;
+    let testPopulatedState: IAuthenticationState;
+    let testInitialStateWithError: IAuthenticationState;
+
+    beforeEach(() => {
+
+        testInitialState = {
+            session: undefined,
+            loading: false,
+            error: {
+                code: undefined,
+                message: undefined,
+            },
+            auth: {
+                cacheResolved: false,
+                authorized: false,
+            },
+        };
+
+        testPopulatedState = {
+            session: 'xxx-xxx-xxx-xxx-session-id',
+            loading: false,
+            error: {
+                code: undefined,
+                message: undefined,
+            },
+            auth: {
+                cacheResolved: true,
+                authorized: true,
+            },
+        };
+
+        testInitialStateWithError = {
+            session: undefined,
+            loading: false,
+            error: {
+                code: 'TEST_CODE' as any,
+                message: 'Test message',
+            },
+            auth: {
+                cacheResolved: false,
+                authorized: false,
+            },
+        };
+
+    });
+
     it('Should not process a non-authentication action', () => {
 
-        const prevState = generateStateClone(testPopulatedState);
+        // TODO: Don't like relying on un-tested code here.
+        const frozen = Utilities.deepClone(testPopulatedState);
 
-        const nextState = authenticationReducer(prevState, {
+        const nextState = authenticationReducer(testPopulatedState, {
             type: 'DUMMY_ACTION',
         } as any);      // Cast to `any` to allow arbitrary action shape
 
-        expect(prevState).toBe(nextState);
+        expect(testPopulatedState).toBe(nextState);
+        expect(testPopulatedState).toEqual(frozen);
 
     });
 
     it('Should produce the correct initial state', () => {
 
-        const expected: IAuthenticationState = generateStateClone(testInitialState);
-
         const initialState: IAuthenticationState = authenticationReducer(undefined as any, {
             type: 'DUMMY_ACTION',
         } as any);
 
-        expect(initialState).toEqual(expected);
+        expect(initialState).toEqual(testInitialState);
 
     });
 
     it('Should produce the correct LOGIN_START state', () => {
 
-        const base: IAuthenticationState = generateStateClone(testInitialState);
-
+        // TODO: find way to remove this dep on untested code.
         const expected: IAuthenticationState = {
-            ...generateStateClone(testInitialState),
+            ...Utilities.deepClone(testInitialState),
             loading: true,
         };
 
@@ -76,25 +91,18 @@ describe('Reducers - Authentication', () => {
             },
         };
 
-        const state = authenticationReducer(base, action);
+        const state = authenticationReducer(testInitialState, action);
 
         expect(state).toEqual(expected);
-        expect(state).not.toBe(base);
+        expect(state).not.toBe(testInitialState);
 
     });
 
     it('Should clear any set auth error on LOGIN_START', () => {
 
-        const base: IAuthenticationState = {
-            ...generateStateClone(testInitialState),
-            error: {
-                code: 'TEST_CODE' as any,
-                message: 'Test message',
-            },
-        };
-
+        // TODO: find way to remove this dep on untested code.
         const expected: IAuthenticationState = {
-            ...generateStateClone(testInitialState),
+            ...Utilities.deepClone(testInitialStateWithError),
             loading: true,
             error: {
                 code: undefined,
@@ -110,67 +118,57 @@ describe('Reducers - Authentication', () => {
             },
         };
 
-        const state = authenticationReducer(base, action);
+        const state = authenticationReducer(testInitialStateWithError, action);
 
         expect(state).toEqual(expected);
-        expect(state).not.toBe(base);
+        expect(state).not.toBe(testInitialStateWithError);
 
     });
 
     it('Should produce the correct LOGIN_FAILED state', () => {
 
-        const base: IAuthenticationState = generateStateClone(testInitialState);
-
-        const error = {
-            code: 'TEST_CODE' as any,
-            message: 'Test message',
-        };
-
-        const expected: IAuthenticationState = {
-            ...generateStateClone(testInitialState),
-            error: { ...error },
-        };
+        const expected: IAuthenticationState = Utilities.deepClone(testInitialStateWithError);
 
         const action: AuthenticationAction[AuthenticationActionType.LOGIN_FAILED] = {
             type: AuthenticationActionType.LOGIN_FAILED,
-            payload: { ...error },
+            payload: {
+                code: testInitialStateWithError.error.code as string,
+                message: testInitialStateWithError.error.message as string,
+            },
         };
 
-        const state = authenticationReducer(base, action);
+        const state = authenticationReducer(testInitialState, action);
 
         expect(state).toEqual(expected);
-        expect(state).not.toBe(base);
+        expect(state).not.toBe(testInitialState);
 
     });
 
     it('Should produce the correct LOGIN_SUCCESS state', () => {
-
-        const base: IAuthenticationState = generateStateClone(testInitialState);
-
-        const successPayload: ILoginSuccess = {
-            user: { ...testUser },
-        };
 
         const action: AuthenticationAction[AuthenticationActionType.LOGIN_SUCCESS_NATIVE] = {
             type: AuthenticationActionType.LOGIN_SUCCESS_NATIVE,
         };
 
         const expected: IAuthenticationState = {
-            ...generateStateClone(testInitialState),
-            auth: { authorized: true },
+            ...Utilities.deepClone(testInitialState),
+            auth: {
+                ...testInitialState.auth,
+                authorized: true,
+            },
         };
 
-        const state = authenticationReducer(base, action);
+        const state = authenticationReducer(testInitialState, action);
 
         expect(state).toEqual(expected);
-        expect(state).not.toBe(base);
+        expect(state).not.toBe(testInitialState);
 
     });
 
     it('Produces the correct LOGIN_FINISHED state', () => {
 
         const base: IAuthenticationState = {
-            ...generateStateClone(testPopulatedState),
+            ...Utilities.deepClone(testPopulatedState),
             loading: true,
         };
 
@@ -178,7 +176,7 @@ describe('Reducers - Authentication', () => {
             type: AuthenticationActionType.LOGIN_FINISHED,
         };
 
-        const expected = generateStateClone(testPopulatedState);
+        const expected = testPopulatedState;
 
         const state = authenticationReducer(base, action);
 
@@ -189,27 +187,28 @@ describe('Reducers - Authentication', () => {
 
     it('Produces the correct LOGOUT state', () => {
 
-        const base = generateStateClone(testPopulatedState);
+        // const base = generateStateClone(testPopulatedState);
 
         const action: AuthenticationAction[AuthenticationActionType.LOGOUT] = {
             type: AuthenticationActionType.LOGOUT,
         };
 
         const expected: IAuthenticationState = {
-            ...generateStateClone(testPopulatedState),
-            auth: { ...generateStateClone(testInitialState).auth },
+            ...Utilities.deepClone(testPopulatedState),
+            auth: {
+                ...testPopulatedState.auth,
+                authorized: false,
+            },
         };
 
-        const state = authenticationReducer(base, action);
+        const state = authenticationReducer(testPopulatedState, action);
 
         expect(state).toEqual(expected);
-        expect(state).not.toBe(base);
+        expect(state).not.toBe(testPopulatedState);
 
     });
 
     it('Produces the correct SET_SESSION state', () => {
-
-        const base = generateStateClone(testInitialState);
 
         const session = 'xxx-xxx-xxx-test-session-id';
 
@@ -219,34 +218,34 @@ describe('Reducers - Authentication', () => {
         };
 
         const expected: IAuthenticationState = {
-            ...generateStateClone(testInitialState),
+            ...Utilities.deepClone(testInitialState),
             session,
         };
 
-        const state = authenticationReducer(base, action);
+        const state = authenticationReducer(testInitialState, action);
 
         expect(state).toEqual(expected);
-        expect(state).not.toBe(base);
+        expect(state).not.toBe(testInitialState);
 
     });
 
     it('Produces the correct CLEAR_SESSION state', () => {
 
-        const base = generateStateClone(testPopulatedState);
+        // const base = generateStateClone(testPopulatedState);
 
         const action: AuthenticationAction[AuthenticationActionType.CLEAR_SESSION] = {
             type: AuthenticationActionType.CLEAR_SESSION,
         };
 
         const expected: IAuthenticationState = {
-            ...generateStateClone(testPopulatedState),
+            ...Utilities.deepClone(testPopulatedState),
             session: undefined,
         };
 
-        const state = authenticationReducer(base, action);
+        const state = authenticationReducer(testPopulatedState, action);
 
         expect(state).toEqual(expected);
-        expect(state).not.toBe(base);
+        expect(state).not.toBe(testPopulatedState);
 
     });
 

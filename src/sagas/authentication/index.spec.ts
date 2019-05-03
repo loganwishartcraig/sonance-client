@@ -2,22 +2,22 @@ import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { nativeLoginSaga } from '.';
-import { AuthenticationAction, AuthenticationActionType } from '../../action-creators/authentication';
-import { UserAction, UserActionType } from '../../action-creators/user';
-import Authenticator, {
-    ILoginSuccess, IRegistrationSuccess
-} from '../../services/authentication/authentication-service/authentication-service';
-import NativeAuthentication, {
-    INativeLoginRequest, INativeRegistrationRequest
-} from '../../services/authentication/native-authentication/native-authentication';
-import Logger, { LogLevel } from '../../services/Logger';
+import { AuthenticationAction, AuthenticationActionType } from '../../actions/authentication';
+import { UserAction, UserActionType } from '../../actions/user';
 import { GenericError } from '../../common/GenericError';
-import { take } from 'redux-saga/effects';
 import { IUser } from '../../models/user';
+import Authenticator, {
+    ILoginSuccess,
+    IRegistrationSuccess
+} from '../../services/authentication/authentication-service';
+import NativeAuthentication, {
+    INativeLoginRequest,
+    INativeRegistrationRequest
+} from '../../services/authentication/native-authentication';
+import Logger, { LogLevel } from '../../services/Logger';
 
-jest.mock('../../services/authentication/native-authentication/native-authentication');
+jest.mock('../../services/authentication/native-authentication');
 
-// TODO: Modify tests to use runSaga
 // TODO: Add tests for remaining sagas
 describe('Sagas - Authentication', () => {
 
@@ -40,7 +40,6 @@ describe('Sagas - Authentication', () => {
             email: 'test@test.com',
             firstName: 'Test',
             lastName: 'User',
-            username: 'testuser',
         };
 
         service = new NativeAuthentication({ logger: new Logger({ logLevel: LogLevel.NONE }) });
