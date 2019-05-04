@@ -36,6 +36,13 @@ export default class NativeAuthentication extends Authenticator {
 
         console.error('[NativeAuthentication] - Resolving error from response', { response });
 
+        if (response.status === 404) {
+            return new GenericError({
+                code: NetworkServiceErrorCode.SERVICE_NOT_FOUND,
+                message: 'The service was not reachable. Try again later.',
+            });
+        }
+
         try {
 
             const errorConfig: INetworkRequestFailure = await response.json();

@@ -9,6 +9,7 @@ export enum GenericErrorCode {
 
 export enum NetworkServiceErrorCode {
     RESPONSE_PARSE_FAILURE = 'ERROR::NETWORK_SERVICE::RESPONSE_PARSE_FAILURE',
+    SERVICE_NOT_FOUND = 'ERROR::NETWORK_SERVICE::SERVICE_NOT_FOUND',
 }
 
 export enum DatabaseServiceErrorCode {
