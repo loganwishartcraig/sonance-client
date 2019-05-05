@@ -1,4 +1,4 @@
-export const ActiveUserKey: string = 'active';
+export const UserCacheKey: string = 'active';
 
 export interface IUser {
     readonly email: string;
@@ -7,8 +7,6 @@ export interface IUser {
 }
 
 export class User {
-
-
 
     // readonly email: string;
     // readonly firstName: string;

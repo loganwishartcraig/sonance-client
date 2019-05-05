@@ -3,6 +3,7 @@ import { AuthenticationActionType } from '../../actions/authentication';
 import { UserAction, UserActionType } from '../../actions/user';
 import { DatabaseService, databaseService } from '../../services/database';
 import { appLogger } from '../../services/Logger';
+import { UserCacheKey } from '../../models/user';
 
 export const cacheUser = function* (dbService: DatabaseService) {
 
@@ -15,7 +16,7 @@ export const cacheUser = function* (dbService: DatabaseService) {
         }
 
         try {
-            yield call([dbService.users, dbService.users.put], action.payload.user);
+            yield call([dbService.users, dbService.users.put], action.payload.user, UserCacheKey);
         } catch (e) {
             appLogger.error({ message: 'Error caching user...', meta: { e } });
         }

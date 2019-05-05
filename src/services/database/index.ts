@@ -5,7 +5,9 @@ import { appLogger } from '../Logger';
 const MODEL_DB_NAME = 'SonanceModelDB';
 const MODEL_DB_VERSION = 1;
 
-const USER_TABLE_INDEX_KEYS: Array<keyof IUser> = ['email'];
+export enum DatabaseTable {
+    USER = 'users',
+}
 
 export class DatabaseService extends Dexie {
 
@@ -16,10 +18,10 @@ export class DatabaseService extends Dexie {
         super(MODEL_DB_NAME);
         this._initEventListeners();
         this.version(MODEL_DB_VERSION).stores({
-            users: USER_TABLE_INDEX_KEYS.join(','),
+            users: ',&email',    // First key blank, allows single record at a time.
         });
 
-        this.users = this.table('users');
+        this.users = this.table(DatabaseTable.USER);
 
     }
 
@@ -40,6 +42,10 @@ export class DatabaseService extends Dexie {
     private _handleReady = (...args: any[]) => {
         appLogger.info({ message: 'Database ready', meta: { args } });
     }
+
+    // public cache<Table extends DatabaseTable>(table: Table, model: DatabaseModel<Table>, key?: string) {
+
+    // }
 
 }
 

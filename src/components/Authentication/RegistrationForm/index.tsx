@@ -28,10 +28,7 @@ interface IRegistrationFormDispatchProps {
 type IRegistrationFormProps = IConnectedComponentProps<IRegistrationFormStateProps, IRegistrationFormDispatchProps, {}>;
 
 const validators: IFormValidators<IRegistrationFormData> = {
-    passwordConfirmation: (value, name, context) => {
-        console.warn('validating password conf', { value, name, context }, value === context.password);
-        return value === context.password;
-    },
+    passwordConfirmation: (value, name, context) => value === context.password,
 };
 
 class RegistrationFormContainer extends Form<IRegistrationFormData> { }
