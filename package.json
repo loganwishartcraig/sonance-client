@@ -55,6 +55,7 @@
   "dependencies": {
     "dexie": "^2.0.4",
     "dotenv": "^7.0.0",
+    "formik": "^1.5.4",
     "immer": "^1.12.1",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
