@@ -18,7 +18,7 @@ const bootstrapUser = function* (authIsCached: () => boolean, dbService: Databas
 
         try {
 
-            // FIXME: Figure out a way to remove the 'any' cast here
+            // FIXME Figure out a way to remove the 'any' cast here
             const user: IUser = yield call([dbService.users, dbService.users.get as any], UserCacheKey);
 
             appLogger.log({ message: 'got cached user', meta: { userConfig: user } });
@@ -35,7 +35,7 @@ const bootstrapUser = function* (authIsCached: () => boolean, dbService: Databas
         } catch (e) {
             appLogger.error({ message: 'Error getting cached user', meta: { e } });
 
-            // TODO: Reload user from server instead of just clearing auth?
+            // TODO Reload user from server instead of just clearing auth?
             yield put(CreateAuthAction.cachedAuthResolved({ isAuthenticated: false }));
         }
 

@@ -1,3 +1,7 @@
+export type OrNullify<I extends {}> = {
+    [key in keyof I]: I[key] | null
+};
+
 export const Utilities = {
 
     decimalToHex: (dec: number): string => `0${dec.toString(16)}`.substr(-2),
@@ -13,7 +17,7 @@ export const Utilities = {
         if (window && window.crypto) {
             const randomValues = window.crypto.getRandomValues(new Uint8Array(partCount / 2));
             return Array.from(randomValues, Utilities.decimalToHex).join(delimiter);
-        } else {
+        } {
             const S4 = () => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
             return `${S4() + S4()}-${S4()}-${S4()}-${S4()}-${S4() + S4() + S4()}`;
         }
@@ -28,7 +32,7 @@ export const Utilities = {
         document.cookie = `${cookieName}=; Path=/; Max-Age=0;`;
     },
 
-    deepClone<T extends Object>(target: T): T {
+    deepClone<T extends {}>(target: T): T {
         return JSON.parse(JSON.stringify(target));
     },
 

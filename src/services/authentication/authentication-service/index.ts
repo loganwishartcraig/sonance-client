@@ -33,7 +33,7 @@ abstract class Authenticator {
     public abstract logout(): Promise<void>;
 
     //  TODO: Should throw a 'GenericError' on 'fetch' throw.
-    public async post<J extends Object>(url: string, payload?: J): Promise<Response> {
+    public async post<J extends {}>(url: string, payload?: J): Promise<Response> {
 
         const headers: Record<string, string> = {
             Accept: 'application/json',

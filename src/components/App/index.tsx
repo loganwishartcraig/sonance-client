@@ -1,10 +1,12 @@
 import * as React from 'react';
-import UserMenu from '../UserNav';
+import UserNav from '../UserNav';
+import ReceiptCapture from '../Receipt/ReceiptCapture';
 
 const App: React.FunctionComponent = () => (
     <div>
-        <UserMenu />
+        <UserNav />
         <span>Welcome to the app!</span>
+        <ReceiptCapture />
     </div>
 );
 

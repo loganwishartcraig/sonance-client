@@ -1,21 +1,21 @@
 import * as React from 'react';
 import { appLogger } from '../../../services/Logger';
-import { Utilities } from '../../../utilities';
+import { Utilities, OrNullify } from '../../../utilities';
 
-export type IFormControlValidator<FormDataShape extends Object> = (
-    value: string,
+export type IFormControlValidator<FormDataShape extends {}> = (
+    value: any,
     name: string,
     data: FormDataShape
 ) => boolean;
 
-export type IFormValidators<FormDataShape extends Object> = {
+export type IFormValidators<FormDataShape extends {}> = {
     [name in keyof FormDataShape]?: IFormControlValidator<FormDataShape>
 };
 
-export interface IFormProps<FormDataShape extends Object> {
+export interface IFormProps<FormDataShape extends {}> {
     readonly id?: string;
     readonly className?: string;
-    readonly initialValues?: Partial<FormData>;
+    readonly initialValues: OrNullify<FormDataShape>;
     readonly validators?: IFormValidators<FormDataShape>;
     readonly onSubmit: (formData: FormDataShape) => void;
     readonly children: (config: {
@@ -29,15 +29,17 @@ interface IFormControlState {
     readonly valid: boolean;
 }
 
-type IFormControls<FormDataShape extends Object> = {
+type IFormControls<FormDataShape extends {}> = {
     [name in keyof FormDataShape]: IFormControlState;
 };
 
-interface IFormState<FormDataShape extends Object> {
+interface IFormState<FormDataShape extends {}> {
     readonly controls: IFormControls<FormDataShape>;
+    readonly isValid: boolean;
 }
 
-class Form<FormDataShape extends Object> extends React.Component<IFormProps<FormDataShape>, IFormState<FormDataShape>> {
+class Form<FormDataShape extends { [key: string]: any }>
+    extends React.Component<IFormProps<FormDataShape>, IFormState<FormDataShape>> {
 
     public state: IFormState<FormDataShape>;
 
@@ -49,14 +51,25 @@ class Form<FormDataShape extends Object> extends React.Component<IFormProps<Form
     private _handleInputChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
 
         const name = target.getAttribute('name');
+        const value = this._resolveInputValue(target);
 
         if (typeof name === 'string' && name) {
-            this._updateFormValueInState(name, target.value);
+            this._updateFormValueInState(name, value);
         } else {
             appLogger.error({
                 message: '[Form] - _handleInputChange() - Non/empty string `name` attribute value on target.',
             });
         }
+
+    }
+
+    private _resolveInputValue(target: HTMLInputElement): any {
+
+        if (target.type === 'file') {
+            return target.files;
+        }
+
+        return target.value;
 
     }
 
@@ -73,42 +86,82 @@ class Form<FormDataShape extends Object> extends React.Component<IFormProps<Form
     }
 
     private _resolveInputValueJson(): FormDataShape {
-        return Object.entries(this.state.controls).reduce((json: FormDataShape, [name, { value }]) => {
-            json[name as keyof FormDataShape] = value;
-            return json;
-        }, {} as FormDataShape);
+
+        // Deliberate usage of 'keys' instead of 'entries' to
+        // avoid typing issue with '{}' empty object default.
+        const controlNames = Object.keys(this.state.controls);
+
+        return controlNames.reduce(
+            (json: FormDataShape, controlName: string) => {
+                json[controlName] = this.state.controls[controlName].value as any;
+                return json;
+            },
+            {} as FormDataShape
+        );
+
     }
 
     private _updateFormValueInState(name: string, value: any) {
 
-        this.setState({
-            controls: {
-                ...this.state.controls,
-                [name]: {
-                    value,
-                    valid: this._validateValue(name, value),
-                },
+        const nextControlsState: IFormControls<FormDataShape> = {
+            ...this.state.controls,
+            [name]: {
+                value,
+                valid: this._validateValue(name, value),
             },
+        };
+
+        const isValid = this._validateControls(nextControlsState);
+
+        appLogger.log({
+            message: 'setting state', meta: {
+                isValid,
+                controls: nextControlsState,
+            },
+        });
+        this.setState({
+            isValid,
+            controls: nextControlsState,
         });
 
     }
 
+    private _validateControls(controlsState: IFormControls<FormDataShape>): boolean {
+
+        const controlsToCheck: IFormControlState[] = Object.values(controlsState);
+
+        for (const { valid } of controlsToCheck) {
+            if (!valid) return false;
+        }
+
+        return true;
+
+    }
+
     private _parseInitialStateFromProps({
-        initialValues = {},
+        initialValues,
     }: IFormProps<FormDataShape>): IFormState<FormDataShape> {
 
         const clonedInitialValues = Utilities.deepClone(initialValues);
 
+        const controls: IFormControls<FormDataShape> = Object
+            .entries(clonedInitialValues)
+            .reduce(
+                (controls, [name, initialValue]) => {
+
+                    controls[name] = this._parseInitialControlState(name, initialValue);
+
+                    return controls;
+
+                },
+                {} as IFormControls<FormDataShape>
+            );
+
+        const isValid = this._validateControls(controls);
+
         return {
-            controls: Object.entries(clonedInitialValues).reduce((controls, [name, initialValue]) => {
-
-                controls[
-                    name as keyof IFormControls<FormDataShape>
-                ] = this._parseInitialControlState(name, initialValue);
-
-                return controls;
-
-            }, {} as IFormControls<FormDataShape>),
+            controls,
+            isValid,
         };
     }
 
@@ -142,7 +195,7 @@ class Form<FormDataShape extends Object> extends React.Component<IFormProps<Form
 
         return (
             <form id={id} className={className} onSubmit={this._handleSubmit}>
-                {children({ onChange: this._handleInputChange, controls })}
+                {children({ controls, onChange: this._handleInputChange })}
             </form>
         );
 

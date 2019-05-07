@@ -4,6 +4,7 @@ import { nativeLoginStart } from '../../../action-creators/authentication';
 import { AuthenticationErrorCode } from '../../../constants/error_codes';
 import { IAppState, IConnectedComponentProps } from '../../../store';
 import Form from '../../Generics/Form';
+import { appLogger } from '../../../services/Logger';
 
 interface ILoginFormData {
     readonly email: string;
@@ -26,10 +27,10 @@ interface ILoginFormOwnProps { }
 
 type ILoginFormProps = IConnectedComponentProps<ILoginFormStateProps, ILoginFormDispatchProps, ILoginFormOwnProps>;
 
-class LoginFormContainer extends Form<ILoginFormData> { }
 class LoginForm extends React.Component<ILoginFormProps> {
 
     private _handleSubmit = (formData: ILoginFormData) => {
+        appLogger.log({ message: 'Form data', meta: { formData } });
         this.props.startLogin(formData);
     }
 
@@ -37,7 +38,14 @@ class LoginForm extends React.Component<ILoginFormProps> {
 
         const { error: { message: errorMessage } } = this.props;
 
-        return <LoginFormContainer id={'LoginForm'} onSubmit={this._handleSubmit}>
+        return <Form<ILoginFormData>
+            id={'LoginForm'}
+            initialValues={{
+                email: '',
+                password: '',
+            }}
+            onSubmit={this._handleSubmit}
+        >
             {({ onChange }) => (
                 <div>
                     <fieldset>
@@ -70,7 +78,7 @@ class LoginForm extends React.Component<ILoginFormProps> {
                     {errorMessage && <span style={{ color: 'red', display: 'block' }}>{errorMessage}</span>}
                 </div>
             )}
-        </LoginFormContainer>;
+        </Form>;
     }
 
 }

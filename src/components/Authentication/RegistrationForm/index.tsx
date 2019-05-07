@@ -31,7 +31,6 @@ const validators: IFormValidators<IRegistrationFormData> = {
     passwordConfirmation: (value, name, context) => value === context.password,
 };
 
-class RegistrationFormContainer extends Form<IRegistrationFormData> { }
 class RegistrationForm extends React.Component<IRegistrationFormProps> {
 
     private _handleSubmit = (formData: IRegistrationFormData) => {
@@ -43,7 +42,18 @@ class RegistrationForm extends React.Component<IRegistrationFormProps> {
         const { error: { message: errorMessage } } = this.props;
 
         return (
-            <RegistrationFormContainer id={'RegistrationForm'} onSubmit={this._handleSubmit} validators={validators} >
+            <Form<IRegistrationFormData>
+                id={'RegistrationForm'}
+                initialValues={{
+                    email: '',
+                    password: '',
+                    passwordConfirmation: '',
+                    nameFirst: '',
+                    nameLast: '',
+                }}
+                validators={validators}
+                onSubmit={this._handleSubmit}
+            >
                 {({ onChange }) => (
                     <div>
                         <fieldset>
@@ -121,7 +131,7 @@ class RegistrationForm extends React.Component<IRegistrationFormProps> {
                         {errorMessage && <span style={{ color: 'red', display: 'block' }}>{errorMessage}</span>}
                     </div>
                 )}
-            </RegistrationFormContainer>
+            </Form>
         );
     }
 
