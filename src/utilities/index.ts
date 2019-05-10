@@ -2,6 +2,8 @@ export type OrNullify<I extends {}> = {
     [key in keyof I]: I[key] | null
 };
 
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
 export const Utilities = {
 
     decimalToHex: (dec: number): string => `0${dec.toString(16)}`.substr(-2),

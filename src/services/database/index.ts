@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { IUser, User } from '../../models/user';
+import { IUser } from '../../models/user';
 import { appLogger } from '../Logger';
 
 const MODEL_DB_NAME = 'SonanceModelDB';

@@ -2,7 +2,7 @@ import produce from 'immer';
 import { Reducer } from 'redux';
 import { AnyAppAction } from '../../actions';
 import { UserActionType } from '../../actions/user';
-import { IUser, User } from '../../models/user';
+import { IUser } from '../../models/user';
 
 export type IUserState = IUser | null;
 

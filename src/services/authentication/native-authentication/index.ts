@@ -16,8 +16,8 @@ export interface INativeLoginRequest {
 export interface INativeRegistrationRequest {
     readonly email: string;
     readonly password: string;
-    readonly nameFirst: string;
-    readonly nameLast: string;
+    readonly firstName: string;
+    readonly lastName: string;
 }
 
 export default class NativeAuthentication extends Authenticator {

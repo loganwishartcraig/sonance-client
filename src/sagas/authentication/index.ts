@@ -3,7 +3,6 @@ import * as AuthActionCreators from '../../action-creators/authentication';
 import { setUser } from '../../action-creators/user';
 import { AuthenticationAction, AuthenticationActionType } from '../../actions/authentication';
 import { LifecycleActionType } from '../../actions/lifecycle';
-import { User } from '../../models/user';
 import Authenticator, {
     generateSessionId,
     ILoginSuccess,

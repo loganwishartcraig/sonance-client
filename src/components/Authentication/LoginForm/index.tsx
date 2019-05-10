@@ -1,10 +1,9 @@
+import { Field, Formik, FormikActions, Form } from 'formik';
 import * as React from 'react';
 import { connect, MapDispatchToProps, MapStateToPropsParam } from 'react-redux';
 import { nativeLoginStart } from '../../../action-creators/authentication';
-import { AuthenticationErrorCode } from '../../../constants/error_codes';
-import { IAppState, IConnectedComponentProps } from '../../../store';
-import Form from '../../Generics/Form';
 import { appLogger } from '../../../services/Logger';
+import { IAppState, IConnectedComponentProps } from '../../../store';
 
 interface ILoginFormData {
     readonly email: string;
@@ -29,56 +28,63 @@ type ILoginFormProps = IConnectedComponentProps<ILoginFormStateProps, ILoginForm
 
 class LoginForm extends React.Component<ILoginFormProps> {
 
-    private _handleSubmit = (formData: ILoginFormData) => {
-        appLogger.log({ message: 'Form data', meta: { formData } });
-        this.props.startLogin(formData);
+    private _handleSubmit = (formConfig: ILoginFormData, formicActions: FormikActions<ILoginFormData>) => {
+        appLogger.log({ message: 'Form data', meta: { formData: formConfig } });
+        this.props.startLogin(formConfig);
     }
 
     public render() {
 
-        const { error: { message: errorMessage } } = this.props;
+        const {
+            loading,
+            error: { message: errorMessage },
+        } = this.props;
 
-        return <Form<ILoginFormData>
-            id={'LoginForm'}
-            initialValues={{
-                email: '',
-                password: '',
-            }}
-            onSubmit={this._handleSubmit}
-        >
-            {({ onChange }) => (
-                <div>
+        return (
+            <Formik<ILoginFormData>
+                initialValues={{
+                    email: '',
+                    password: '',
+                }}
+                onSubmit={this._handleSubmit}
+            >
+                <Form>
                     <fieldset>
                         <label className="loginForm--label" htmlFor="loginForm--input--email">
                             Email
-                            <input
+                                <Field
                                 id="loginForm--input--email"
-                                name="email"
                                 type="email"
+                                name="email"
                                 autoComplete="email"
-                                onChange={onChange}
                                 required
+                                disabled={loading}
                             />
                         </label>
                         <label className="loginForm--label" htmlFor="loginForm--input--password">
                             Password
-                            <input
-                                id="loginForm--input--password"
-                                name="password"
+                                <Field
                                 type="password"
+                                name="password"
                                 autoComplete="current-password"
-                                onChange={onChange}
                                 required
+                                disabled={loading}
                             />
                         </label>
                     </fieldset>
-                    <button type="submit">
-                        Login
-                    </button>
-                    {errorMessage && <span style={{ color: 'red', display: 'block' }}>{errorMessage}</span>}
-                </div>
-            )}
-        </Form>;
+                    <div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                        >
+                            Login
+                        </button>
+                    </div>
+                    {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+                </Form>
+            </Formik>
+        );
+
     }
 
 }
