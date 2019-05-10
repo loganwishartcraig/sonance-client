@@ -1,34 +1,19 @@
+import { ErrorMessage, Form, Formik } from 'formik';
 import * as React from 'react';
 import { appLogger } from '../../../services/Logger';
-import Form from '../../Generics/Form';
-import DropZone from '../../Generics/DropZone';
+import DropFileInput from '../../Generics/DropFileInput';
 
-interface ReceiptCaptureFormData {
-    receiptPicture: FileList;
+interface IReceiptCaptureFormData {
+    receiptPicture: FileList | null;
 }
 
 export default class ReceiptCapture extends React.Component {
 
-    private _fileInputRef: React.RefObject<HTMLInputElement>;
-
-    constructor(props: {}) {
-        super(props);
-        this._fileInputRef = React.createRef();
-    }
-
-    private _handleSubmit = (formData: ReceiptCaptureFormData) => {
+    private _handleSubmit = (formData: IReceiptCaptureFormData) => {
         appLogger.warn({ message: 'submitted!', meta: { formData } });
     }
 
-    private _handleFileDrop = (droppedFiles: FileList) => {
-        appLogger.warn({ message: 'Dropped!', meta: { droppedFiles } });
-
-        if (this._fileInputRef.current) {
-            this._fileInputRef.current.files = droppedFiles;
-        }
-    }
-
-    private _validateReceiptPicture = (value: FileList) => {
+    private _validateReceiptPicture = (value: FileList | null) => {
         return (
             value
             && value.length === 1
@@ -38,50 +23,39 @@ export default class ReceiptCapture extends React.Component {
 
     public render() {
         return (
-            <Form<ReceiptCaptureFormData>
+            <Formik<IReceiptCaptureFormData>
+                initialValues={{ receiptPicture: null }}
+                validateOnChange={true}
+                validate={(values) => {
+                    if (!this._validateReceiptPicture(values.receiptPicture)) {
+                        return { receiptPicture: 'Invalid file uploaded. Make sure to upload a single image.' };
+                    }
+                }}
                 onSubmit={this._handleSubmit}
-                initialValues={{
-                    receiptPicture: null,
-                }}
-                validators={{
-                    receiptPicture: this._validateReceiptPicture,
-                }}
             >
-                {({
-                    onChange,
-                    controls,
-                }) => (
-                        <div>
-                            {console.warn(controls)}
-                            <label htmlFor="uploadFile">Upload a file</label>
-                            <DropZone
-                                dropEffect={'move'}
-                                onDrop={this._handleFileDrop}
-                                style={{
-                                    height: '200px',
-                                    width: '500px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                                multiple={false}
-                                matchMime={/^image\//}
-                            >
-                                <input
-                                    ref={this._fileInputRef}
-                                    id="uploadFile"
-                                    type="file"
-                                    name="receiptPicture"
-                                    accept="image/*"
-                                    onChange={onChange}
-                                    multiple={false}
-                                    required
-                                />
-                            </DropZone>
-                            <button type="submit">Submit</button>
-                        </div>
-                    )}
-            </Form>
+                {formikConf => (
+                    <Form>
+                        <label htmlFor="receiptPicture">Upload a file</label>
+                        <DropFileInput
+                            name="receiptPicture"
+                            formik={formikConf}
+                            required={true}
+                            style={{
+                                height: '200px',
+                                width: '500px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                            {inputProps => (
+                                <input type="file" accept="image/*" {...inputProps} />
+                            )}
+                        </DropFileInput>
+                        <ErrorMessage name="receiptPicture" />
+                        <button type="submit" disabled={!formikConf.isValid}>Submit</button>
+                    </Form>
+                )}
+            </Formik>
         );
     }
 
