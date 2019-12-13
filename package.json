@@ -36,7 +36,7 @@
     "i": "^0.3.6",
     "jest": "^24.8.0",
     "jest-enzyme": "^7.0.2",
-    "npm": "^6.10.1",
+    "npm": "^6.13.4",
     "redux-devtools": "^3.5.0",
     "redux-saga-test-plan": "^4.0.0-beta.3",
     "ts-jest": "^24.0.2",
