@@ -1,5 +1,7 @@
-# TypescriptReactRedux
+# Sonance Client
 
-This is a contrived example to experiment with integrating Typescript into a React/Redux project.
+The front-end code for the Sonance project. Currently under development.
 
-It's also being used to experiment with modular Webpack config, split across files.
+See the designs on [figma](https://www.figma.com/file/HFpirWNZrtufjhN5RBiDQXgL/Mobile-Design?node-id=15%3A52).
+
+![Project screenshot](https://i.ibb.co/SRWLjWf/Landing-Default.png)
