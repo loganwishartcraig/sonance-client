@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
@@ -57,9 +57,11 @@ module.exports = {
         publicPath: '/'
     },
     plugins: [
-        new CleanWebpackPlugin([
-            'public'
-        ]),
+        new CleanWebpackPlugin({
+            cleanOnceBeforeBuildPatterns: [
+                'public'
+            ]
+        }),
         new HtmlWebpackPlugin({
             title: 'test - title',
             filename: 'index.html',
